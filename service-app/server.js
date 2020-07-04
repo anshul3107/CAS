@@ -1,15 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const serverConfig = require('./serverConfig');
-const sampleRoutes = require('./Routes/sample-routes');
+const apiRoutes = require('./Routes/api-routes');
 
 const server = express();
 
 server.use(bodyParser.json());
+server.use('/api', apiRoutes);
 
-server.use('/hello', sampleRoutes);
-
-server.listen(serverConfig.serverPort, () =>
-    console.log('Service Application started. Listening on port:', serverConfig.serverPort)
-);
+mongoose
+    .connect(serverConfig.dbURL, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then(() =>
+        server.listen(
+            serverConfig.serverPort,
+            console.log('Server Running! Listening on port:', serverConfig.serverPort)
+        )
+    )
+    .catch((err) => console.log('Error connecting to the DB:', err));
