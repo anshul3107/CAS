@@ -27,6 +27,17 @@ server.use('/public/api', publicRoutes);
 // });
 server.use('/api', apiRoutes);
 
+server.use((err, req, res, next) => {
+    if (res.headerSent) {
+        return next(err);
+    }
+    res.status(err.code || 500);
+    res.json({
+        code: err.code || 500,
+        message: err.message || 'Internal Server Error occoured'
+    });
+});
+
 mongoose
     .connect(serverConfig.dbURL, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
     .then(() =>

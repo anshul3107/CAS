@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const serverConfig = require('../serverConfig');
 const User = require('../Models/user');
+const HttpError = require('../Models/http-error');
 
 const sendEmail = (options) => {
     const client = new postmark.ServerClient(serverConfig.postmarkKey);
@@ -19,13 +20,13 @@ exports.emailVerificationStatus = (req, res, next) => {
     const email = req.query && req.query.email;
     const reqKey = req.headers && req.headers.api_key;
     if (reqKey !== serverConfig.apiKey) {
-        res.status(401).json({message: 'Unauthorised access!'});
+        return next(new HttpError(500, 'Unauthorised access!'));
     } else {
         User.findOne({email: email})
             .then((result) => {
                 if (result) {
                     if (result.isVerified) {
-                        res.json({message: 'User has already verified this email id'});
+                        return next(new HttpError(400, 'User has already verified this email id'));
                     } else {
                         res.json({email: result.email, isVerified: result.isVerified});
                     }
@@ -54,22 +55,28 @@ exports.emailVerificationStatus = (req, res, next) => {
                                     res.json({email: result.email, isVerified: result.isVerified});
                                 })
                                 .catch(() => {
-                                    res.json({
-                                        message:
+                                    return next(
+                                        new HttpError(
+                                            500,
                                             "Cannot send the Email. We're looking in the issue. Please retry in sometime!"
-                                    });
+                                        )
+                                    );
                                 });
                         })
                         .catch(() => {
-                            res.json({
-                                message:
+                            return next(
+                                new HttpError(
+                                    500,
                                     "Cannot update in the DB. We're looking in the issue. Please retry in sometime!"
-                            });
+                                )
+                            );
                         });
                 }
             })
             .catch((err) => {
-                res.json({message: "We're looking in the issue. Please retry in sometime!"});
+                return next(
+                    new HttpError(500, "Cannot read from the DB. We're looking in the issue. Please retry in sometime!")
+                );
             });
     }
 };
@@ -81,27 +88,27 @@ exports.emailVerificationUpdate = (req, res, next) => {
         User.findOne({email: decoded.email}).then((result) => {
             if (result) {
                 if (result.isVerified) {
-                    res.json({message: 'User has already verified this email id'});
+                    return next(new HttpError(400, 'User has already verified this email id'));
                 } else {
                     User.findOneAndUpdate({email: decoded.email}, {$set: {isVerified: true}})
                         .then((result) => {
                             res.json({message: 'Email successfully verified'});
                         })
                         .catch((err) => {
-                            res.json({message: "We're looking in the issue. Please retry in sometime!"});
+                            return next(new HttpError(500, "We're looking in the issue. Please retry in sometime!"));
                         });
                 }
             } else {
-                res.json({message: "Specified user doesn't exists!"});
+                return next(new HttpError(404, "Specified user doesn't exists!"));
             }
         });
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
-            res.json({message: 'Verification Token has expired. Please generate another token for verification.'});
+            return next(new HttpError(400, 'Token has expired. Please generate another token for verification.'));
         } else if (err.name === 'JsonWebTokenError') {
-            res.json({message: 'Token is invalid. Please generate another token for verification.'});
+            return next(new HttpError(400, 'Token is invalid. Please generate another token for verification.'));
         } else {
-            res.json({message: "We're looking in the issue. Please retry in sometime!"});
+            return next(new HttpError(500, "We're looking in the issue. Please retry in sometime!"));
         }
     }
 };
