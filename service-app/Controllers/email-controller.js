@@ -27,11 +27,11 @@ const emailVerificationStatus = (req, res, next) => {
                 const mailSubject = 'Email Verification via MyAPI';
                 const htmlStr =
                     'Please click on the ' +
-                    `<a href="http://localhost:${serverConfig.serverPort}/api/email/verify?token=${token}">` +
+                    `<a href="http://localhost:${serverConfig.serverPort}/api/email/verify-token?token=${token}">` +
                     'link</a> to verify your email.';
                 const textStr =
                     'Please click on the following link to verify your email. ' +
-                    `http://localhost:${serverConfig.serverPort}/api/email/verify?token=${token}">`;
+                    `http://localhost:${serverConfig.serverPort}/api/email/verify-token?token=${token}">`;
                 sendEmail({
                     from: serverConfig.fromEmail,
                     to: result.email,
@@ -47,3 +47,18 @@ const emailVerificationStatus = (req, res, next) => {
 };
 
 exports.emailVerificationStatus = emailVerificationStatus;
+
+const emailVerificationUpdate = (req, res, next) => {
+    const token = (req.query && req.query.token) || '';
+    const email = (req.query && req.query.email) || '';
+    const decoded = jwt.verify(token, serverConfig.jwtPrvtKey);
+
+    console.log('email received in request is ' + decoded.email);
+
+    User.findOneAndUpdate({email: decoded.email}, {$set: {isVerified: 'true'}}).then((result) => {
+        console.log('document updated');
+        res.json({message: 'Email successfully verified'});
+    });
+};
+
+exports.emailVerificationUpdate = emailVerificationUpdate;
