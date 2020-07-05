@@ -11,7 +11,7 @@ server.use(bodyParser.json());
 server.use('/api', apiRoutes);
 
 mongoose
-    .connect(serverConfig.dbURL, {useNewUrlParser: true, useUnifiedTopology: true})
+    .connect(serverConfig.dbURL, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
     .then(() =>
         server.listen(
             serverConfig.serverPort,
