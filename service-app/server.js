@@ -1,13 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const passport = require('passport');
 
 const serverConfig = require('./serverConfig');
 const publicRoutes = require('./Routes/public-routes');
 const apiRoutes = require('./Routes/api-routes');
+const authRoutes = require('./Routes/auth-routes');
 
 const server = express();
-
+server.use(passport.initialize());
 server.use(bodyParser.json());
 
 server.use((req, res, next) => {
@@ -26,6 +28,7 @@ server.use('/public/api', publicRoutes);
 //     next();
 // });
 server.use('/api', apiRoutes);
+server.use('/auth', authRoutes);
 
 server.use((err, req, res, next) => {
     if (res.headerSent) {
