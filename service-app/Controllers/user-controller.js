@@ -1,15 +1,16 @@
 const User = require('../Models/user');
 const HttpError = require('../Models/http-error');
+const jwt = require('jsonwebtoken');
 const emailController = require('./email-controller');
+const serverConfig = require('../serverConfig');
 
 exports.newUserRegistration = (req, res, next) => {
-    console.log('REQ BODY >>> ', req.body);
-    const {firstName, lastName, email, addressLine1, addressLine2, postalCode, city, country} = req.body;
+    const {firstName, lastName, email, password, addressLine1, addressLine2, postalCode, city, country} = req.body;
     try {
         User.findOne({email}).then((result) => {
             if (result) {
                 return next(new HttpError(400, 'This Email is already registered with us. Please login'));
-            } else if (!(firstName && lastName && email && addressLine1 && postalCode && city && country)) {
+            } else if (!(firstName && lastName && email && password && addressLine1 && postalCode && city && country)) {
                 return next(new HttpError(400, 'Bad Data. Missing mandatory fields.'));
             } else {
                 const newUser = new User({
@@ -20,7 +21,8 @@ exports.newUserRegistration = (req, res, next) => {
                     addressLine2,
                     postalCode,
                     city,
-                    country
+                    country,
+                    password
                 });
                 newUser
                     .save()
@@ -29,7 +31,7 @@ exports.newUserRegistration = (req, res, next) => {
                         return next(
                             new HttpError(
                                 500,
-                                "11Cannot update in the DB. We're looking in the issue. Please retry in sometime!"
+                                "Cannot update in the DB. We're looking in the issue. Please retry in sometime!"
                             )
                         );
                     });
@@ -38,4 +40,23 @@ exports.newUserRegistration = (req, res, next) => {
     } catch (err) {
         return next(new HttpError(500, "We're looking in the issue. Please retry in sometime!"));
     }
+};
+
+exports.userLogin = (req, res, next) => {
+    const {email, password} = req.body;
+    User.findOne({email: email})
+        .then((result) => {
+            if (result) {
+                if (result.password === password) {
+                    res.json({email, authToken: jwt.sign({email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'})});
+                } else {
+                    return next(new HttpError(400, 'Bad Data. Login credentials mismatched!'));
+                }
+            } else {
+                return next(new HttpError(400, 'User not found!'));
+            }
+        })
+        .catch((err) => {
+            return next(new HttpError(500, "We're looking in the issue. Please retry in sometime!"));
+        });
 };

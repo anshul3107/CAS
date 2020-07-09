@@ -1,6 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
+
+const userController = require('../Controllers/user-controller');
 const serverConfig = require('../serverConfig');
 
 const router = express.Router();
@@ -35,5 +37,7 @@ router.get(
     '/facebook/callback',
     passport.authenticate('facebook', {successRedirect: '/fbLoginSuccess', failureRedirect: '/fbLoginFailure'})
 );
+
+router.post('/token', userController.userLogin);
 
 module.exports = router;
