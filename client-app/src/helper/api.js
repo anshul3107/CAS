@@ -1,15 +1,18 @@
-const fetchAPI = (method, url, payload = null, customHeaders = {}) => {
-    let options = {};
+import config from '../Configuration';
 
-    options['method'] = method;
+const fetchAPI = (method, url, payload = null, customHeaders = {}) => {
+    let options = {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            ...customHeaders
+        }
+    };
     if (payload) {
         options['body'] = JSON.stringify(payload);
     }
-    options['headers'] = {
-        'Content-Type': 'application/json',
-        ...customHeaders
-    };
-    return fetch(url, {...options}).then((res) => res.json());
+
+    return fetch(`${config.API_BASE_URL}${url}`, options).then((res) => res.json());
 };
 
 const getRequest = (url, customHeaders) => {

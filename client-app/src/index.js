@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom';
 
-import routeConfig from './RouteConfig';
+import './styles/index.scss';
+import {routes, redirections} from './RouteConfig';
 
 const queryParams = (queryString) => {
     let params = {};
@@ -20,7 +21,10 @@ const queryParams = (queryString) => {
 ReactDOM.render(
     <Router>
         <Switch>
-            {routeConfig.map((route, index) => {
+            {redirections.map((redirection, indx) => {
+                return <Redirect exact key={indx} from={redirection.from} to={redirection.to} />;
+            })}
+            {routes.map((route, index) => {
                 return (
                     <Route
                         key={index}

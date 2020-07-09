@@ -1,5 +1,13 @@
-// import SampleComponent from './Components/SampleComponent';
+import Registration from './Components/Registration';
+import HomePage from './Components/Homepage';
 
-// const samplePath = 'some/path';
+const rootPath = '/';
+const homePagePath = '/home';
+const registrationPath = '/user/register';
 
-// export default [{path: samplePath, component: SampleComponent}];
+export const routes = [
+    {path: homePagePath, component: HomePage},
+    {path: registrationPath, component: Registration}
+];
+
+export const redirections = [{from: rootPath, to: homePagePath}];

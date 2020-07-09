@@ -1,0 +1,52 @@
+label {
+    margin-bottom: 0;
+}
+
+input {
+    color: grey;
+
+    &:focus {
+        outline: none;
+        color: black;
+    }
+
+    &:disabled {
+        color: grey;
+    }
+}
+
+.box {
+    border-radius: 12px;
+}
+
+.pt-2px {
+    padding-top: 2px;
+}
+
+.pl-115px {
+    padding-left: 115px;
+}
+
+.text-grey {
+    color: darkgray;
+}
+
+.text-blue {
+    color: #007bff;
+}
+
+.text-error {
+    color: red;
+}
+
+.border-error {
+    border: 1px solid red;
+}
+
+.border-blue {
+    border: 1px solid #007bff;
+}
+
+.font-smaller {
+    font-size: smaller;
+}
