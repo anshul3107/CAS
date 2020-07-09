@@ -6,6 +6,7 @@ export default function (props) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [addressLine1, setAddressLine1] = useState('');
     const [addressLine2, setAddressLine2] = useState('');
     const [city, setCity] = useState('Dublin');
@@ -14,6 +15,7 @@ export default function (props) {
     const [firstNameMsg, setFirstNameMsg] = useState('');
     const [lastNameMsg, setLastNameMsg] = useState('');
     const [emailMsg, setEmailMsg] = useState('');
+    const [passwordMsg, setPasswordMsg] = useState('');
     const [addressLine1Msg, setAddressLine1Msg] = useState('');
     const [postalCodeMsg, setPostalCodeMsg] = useState('');
 
@@ -28,7 +30,8 @@ export default function (props) {
         addressLine2,
         postalCode,
         city,
-        country: 'Ireland'
+        country: 'Ireland',
+        password
     };
 
     const checkValidation = () => {
@@ -47,6 +50,10 @@ export default function (props) {
         } else if (!emailRegEx.test(email)) {
             setEmailMsg('Incorrect format. Please check and correct your Email.');
             focusField = focusField === '' ? 'email' : focusField;
+        }
+        if (!password) {
+            setPasswordMsg('Mandatory Field. Please Enter your Password.');
+            focusField = focusField === '' ? 'password' : focusField;
         }
         if (!addressLine1) {
             setAddressLine1Msg('Mandatory Field. Please Enter your Address.');
@@ -111,6 +118,18 @@ export default function (props) {
                             setEmailMsg('');
                         }}
                         errMessage={emailMsg}
+                    />
+                    <Input
+                        id='password'
+                        valueType='password'
+                        labelData='* Password'
+                        labelClass='text-grey pt-2px'
+                        valueData={password}
+                        valueClass='pl-115px'
+                        onChange={(event) => {
+                            setPassword(event.target.value);
+                        }}
+                        errMessage={passwordMsg}
                     />
                     <Input
                         id='addressLine1'
