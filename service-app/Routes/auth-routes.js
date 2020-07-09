@@ -19,10 +19,12 @@ passport.use(
         {
             clientID: serverConfig.fbAppId,
             clientSecret: serverConfig.fbAppSecretKey,
-            callbackURL: serverConfig.fbAppCallbackURL
+            callbackURL: serverConfig.fbAppCallbackURL,
+            profileFields: ['email', 'name']
         },
         (accessToken, refreshToken, profile, callback) => {
             console.log('profile >>>', JSON.stringify(profile));
+            console.log('profile >>>', {...profile});
             user = {...profile};
             return callback(null, profile);
         }

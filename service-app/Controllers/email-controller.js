@@ -16,6 +16,38 @@ const sendEmail = (options) => {
     });
 };
 
+const generateTokenAndSendEmail = (result, res, next) => {
+    try {
+        const token = jwt.sign({email: result.email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'});
+        const mailSubject = 'Email Verification via MyAPI';
+        const htmlStr =
+            'Please click on the ' +
+            `<a href="http://localhost:${serverConfig.serverPort}/api/email/verify-token?token=${token}">` +
+            'link</a> to verify your email.';
+        const textStr =
+            'Please click on the following link to verify your email. ' +
+            `http://localhost:${serverConfig.serverPort}/api/email/verify-token?token=${token}">`;
+        const emailRes = sendEmail({
+            from: serverConfig.fromEmail,
+            to: result.email,
+            subject: mailSubject,
+            text: textStr,
+            html: htmlStr
+        })
+            .then(() => {
+                res.json({email: result.email, isVerified: result.isVerified});
+            })
+            .catch(() => {
+                return next(
+                    new HttpError(500, "Cannot send the Email. We're looking in the issue. Please retry in sometime!")
+                );
+            });
+    } catch (err) {
+        return next(new HttpError(500, "We're looking in the issue. Please retry in sometime!"));
+    }
+};
+exports.generateTokenAndSendEmail = generateTokenAndSendEmail;
+
 exports.emailVerificationStatus = (req, res, next) => {
     const email = req.query && req.query.email;
     const reqKey = req.headers && req.headers.api_key;
@@ -30,35 +62,7 @@ exports.emailVerificationStatus = (req, res, next) => {
                 const newUser = new User({email: email, isVerified: false});
                 newUser
                     .save()
-                    .then((result) => {
-                        const token = jwt.sign({email: email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'});
-                        const mailSubject = 'Email Verification via MyAPI';
-                        const htmlStr =
-                            'Please click on the ' +
-                            `<a href="http://localhost:${serverConfig.serverPort}/api/email/verify-token?token=${token}">` +
-                            'link</a> to verify your email.';
-                        const textStr =
-                            'Please click on the following link to verify your email. ' +
-                            `http://localhost:${serverConfig.serverPort}/api/email/verify-token?token=${token}">`;
-                        sendEmail({
-                            from: serverConfig.fromEmail,
-                            to: result.email,
-                            subject: mailSubject,
-                            text: textStr,
-                            html: htmlStr
-                        })
-                            .then(() => {
-                                res.json({email: result.email, isVerified: result.isVerified});
-                            })
-                            .catch(() => {
-                                return next(
-                                    new HttpError(
-                                        500,
-                                        "Cannot send the Email. We're looking in the issue. Please retry in sometime!"
-                                    )
-                                );
-                            });
-                    })
+                    .then((result) => generateTokenAndSendEmail(result, res, next))
                     .catch(() => {
                         return next(
                             new HttpError(
