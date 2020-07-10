@@ -42,7 +42,12 @@ server.use((err, req, res, next) => {
 });
 
 mongoose
-    .connect(serverConfig.dbURL, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
+    .connect(serverConfig.dbURL, {
+        useCreateIndex: true,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false
+    })
     .then(() =>
         server.listen(
             serverConfig.serverPort,

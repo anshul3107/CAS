@@ -38,7 +38,7 @@ exports.newUserRegistration = (req, res, next) => {
             }
         });
     } catch (err) {
-        return next(new HttpError(500, "We're looking in the issue. Please retry in sometime!"));
+        return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
     }
 };
 
@@ -57,6 +57,6 @@ exports.userLogin = (req, res, next) => {
             }
         })
         .catch((err) => {
-            return next(new HttpError(500, "We're looking in the issue. Please retry in sometime!"));
+            return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
         });
 };

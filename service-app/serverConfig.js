@@ -14,3 +14,5 @@ exports.fromEmail = 'x19192304@student.ncirl.ie';
 exports.fbAppId = '2731754247049365';
 exports.fbAppSecretKey = '2590cf38f8f7bce38c79f2f282bc3f1f';
 exports.fbAppCallbackURL = 'http://localhost:9000/auth/facebook/callback';
+
+exports.clientAppURL = 'http://localhost:3000';
