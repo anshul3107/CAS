@@ -5,7 +5,9 @@ import API from '../../helper/api';
 
 export default function () {
     const onSubmit = (user) => {
-        API.post('/auth/token', user);
+        API.post('/auth/token', user).then((res) => {
+            window.sessionStorage.setItem('authData', JSON.stringify({token: res.authToken}));
+        });
     };
 
     return <LoginForm onSubmit={onSubmit} />;

@@ -1,3 +1,4 @@
-import {Input} from './Input';
+import Input from './Input';
+import Spinner from './Spinner';
 
-export {Input};
+export {Input, Spinner};

@@ -1,7 +1,7 @@
 import React from 'react';
 import './style.scss';
 
-export const Input = ({
+export default function ({
     id = '',
     wrapClass = '',
     labelData = '',
@@ -12,7 +12,7 @@ export const Input = ({
     isDisabled = false,
     errMessage = '',
     onChange = (event) => console.log(event.target.value)
-}) => {
+}) {
     return (
         <div className={`input mb-2 ${wrapClass}`}>
             <div className={`position-absolute ${labelClass} ${labelData.startsWith('*') ? 'ml-1' : 'ml-2 pl-2'}`}>
@@ -31,4 +31,4 @@ export const Input = ({
             </div>
         </div>
     );
-};
+}

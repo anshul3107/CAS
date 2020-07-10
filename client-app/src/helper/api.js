@@ -12,7 +12,7 @@ const fetchAPI = (method, url, payload = null, customHeaders = {}) => {
         options['body'] = JSON.stringify(payload);
     }
 
-    return fetch(`${config.API_BASE_URL}${url}`, options).then((res) => res.json());
+    return fetch(`${url.startsWith('/') ? config.API_BASE_URL : ''}${url}`, options).then((res) => res.json());
 };
 
 const getRequest = (url, customHeaders) => {

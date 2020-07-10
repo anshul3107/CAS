@@ -37,14 +37,9 @@ export default function (props) {
 
     return (
         <div className='login'>
-            <h3>Login</h3>
+            <h3 className='text-center'>Login</h3>
             <div className='d-flex justify-content-center'>
                 <div className='col-12 col-md-6'>
-                    <div className='d-flex justify-content-start'>
-                        <span className='font-italic font-smaller text-grey'>
-                            Please fill in your details. [ * marks mandatory fields]
-                        </span>
-                    </div>
                     <Input
                         id='email'
                         labelData='* Email'

@@ -75,7 +75,7 @@ export default function (props) {
 
     return (
         <div className='registration'>
-            <h3>Registration</h3>
+            <h3 className='text-center'>Registration</h3>
             <div className='d-flex justify-content-center'>
                 <div className='col-12 col-md-6'>
                     <div className='d-flex justify-content-start'>
