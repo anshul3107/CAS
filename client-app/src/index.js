@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom';
 
 import './styles/index.scss';
+import Header from './Components/Header';
+import Footer from './Components/Footer';
 import {routes, redirections} from './RouteConfig';
 
 const queryParams = (queryString) => {
@@ -19,24 +21,28 @@ const queryParams = (queryString) => {
 };
 
 ReactDOM.render(
-    <Router>
-        <Switch>
-            {redirections.map((redirection, indx) => {
-                return <Redirect exact key={indx} from={redirection.from} to={redirection.to} />;
-            })}
-            {routes.map((route, index) => {
-                return (
-                    <Route
-                        key={index}
-                        exact
-                        path={route.path}
-                        render={(props) => (
-                            <route.component {...props.match.params} {...queryParams(props.location.search)} />
-                        )}
-                    />
-                );
-            })}
-        </Switch>
-    </Router>,
+    <>
+        <Router>
+            <Header />
+            <Switch>
+                {redirections.map((redirection, indx) => {
+                    return <Redirect exact key={indx} from={redirection.from} to={redirection.to} />;
+                })}
+                {routes.map((route, index) => {
+                    return (
+                        <Route
+                            key={index}
+                            exact
+                            path={route.path}
+                            render={(props) => (
+                                <route.component {...props.match.params} {...queryParams(props.location.search)} />
+                            )}
+                        />
+                    );
+                })}
+            </Switch>
+            <Footer />
+        </Router>
+    </>,
     document.getElementById('root')
 );

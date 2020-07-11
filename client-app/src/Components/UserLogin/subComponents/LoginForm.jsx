@@ -37,18 +37,19 @@ export default function (props) {
 
     return (
         <div className='login'>
-            <h3 className='text-center'>Login</h3>
             <div className='d-flex justify-content-center'>
                 <div className='col-12 col-md-6'>
+                    <h3 className='mb-3'>Log In</h3>
                     <Input
                         id='email'
                         labelData='* Email'
                         labelClass='text-grey pt-2px'
                         valueData={email}
-                        valueClass='pl-115px'
+                        valueClass='pl-95px'
                         onChange={(event) => {
                             setEmail(event.target.value);
                             setEmailMsg('');
+                            props.setLoginError(null);
                         }}
                         errMessage={emailMsg}
                     />
@@ -58,9 +59,11 @@ export default function (props) {
                         labelData='* Password'
                         labelClass='text-grey pt-2px'
                         valueData={password}
-                        valueClass='pl-115px'
+                        valueClass='pl-95px'
                         onChange={(event) => {
                             setPassword(event.target.value);
+                            setPasswordMsg('');
+                            props.setLoginError(null);
                         }}
                         errMessage={passwordMsg}
                     />
@@ -72,10 +75,13 @@ export default function (props) {
                                     props.onSubmit(userInfo);
                                 }
                             }}>
-                            Login
+                            Log In
                         </button>
                     </div>
                 </div>
+            </div>
+            <div className='d-flex justify-content-center mt-4'>
+                {props.isLoggedError && <p className='alert alert-danger w-fit'>{props.isLoggedError}</p>}
             </div>
         </div>
     );

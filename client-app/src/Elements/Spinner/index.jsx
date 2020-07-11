@@ -2,10 +2,14 @@ import React from 'react';
 
 import './style.scss';
 
-export default function (props) {
+export default function ({isLoading}) {
     return (
-        <div className='loading-spinner'>
-            <div className='dual-ring'></div>
-        </div>
+        <>
+            {isLoading && (
+                <div className='loading-spinner'>
+                    <div className='dual-ring' />
+                </div>
+            )}
+        </>
     );
 }

@@ -13,12 +13,12 @@ export default function ({email, token}) {
             setVerificationStatus(res);
             setLoading(false);
         });
-    }, [token]);
+    }, [email, token]);
 
     return (
         <div className='d-flex justify-content-center'>
             <div className='py-4 px-3'>
-                {isLoading && <Spinner />}
+                <Spinner isLoading={isLoading} />
                 {!verificationStatus && (
                     <p className='alert alert-warning'>
                         Please wait, While we are working on updating your Email Verification Status.

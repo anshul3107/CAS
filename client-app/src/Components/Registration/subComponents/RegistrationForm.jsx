@@ -75,14 +75,12 @@ export default function (props) {
 
     return (
         <div className='registration'>
-            <h3 className='text-center'>Registration</h3>
             <div className='d-flex justify-content-center'>
                 <div className='col-12 col-md-6'>
-                    <div className='d-flex justify-content-start'>
-                        <span className='font-italic font-smaller text-grey'>
-                            Please fill in your details. [ * marks mandatory fields]
-                        </span>
-                    </div>
+                    <h3 className='mb-3'>Create Account</h3>
+                    <span className='font-italic font-smaller text-grey'>
+                        Please fill in your details. [ * marks mandatory fields]
+                    </span>
                     <Input
                         id='firstName'
                         labelData='* First Name'
@@ -187,7 +185,7 @@ export default function (props) {
                                     props.onSubmit(userInfo);
                                 }
                             }}>
-                            Register
+                            Submit
                         </button>
                     </div>
                 </div>
