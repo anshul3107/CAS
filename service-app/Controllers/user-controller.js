@@ -27,10 +27,7 @@ exports.newUserRegistration = (req, res, next) => {
                 newUser
                     .save()
                     .then((result) => {
-                        emailController.generateTokenAndSendEmail(result.email, res, next).then((emailStatus) => {
-                            console.log('emailStatus >>>', emailStatus);
-                            res.json({code: 200, message: 'Email Sent successfully.'});
-                        });
+                        emailController.generateTokenAndSendEmail(result.email, res, next);
                     })
                     .catch((err) => {
                         console.log('newUserRegistration.1', err);
