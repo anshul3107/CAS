@@ -156,7 +156,7 @@ export default function (props) {
                         valueData={postalCode.toUpperCase()}
                         valueClass='pl-115px'
                         onChange={(event) => {
-                            setPostalCode(event.target.value);
+                            setPostalCode(event.target.value.toUpperCase());
                             setPostalCodeMsg('');
                         }}
                         errMessage={postalCodeMsg}
