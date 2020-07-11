@@ -48,9 +48,13 @@ exports.userLogin = (req, res, next) => {
         .then((result) => {
             if (result) {
                 if (result.password === password) {
-                    res.json({email, authToken: jwt.sign({email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'})});
+                    res.json({
+                        email,
+                        name: result.firstName,
+                        authToken: jwt.sign({email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'})
+                    });
                 } else {
-                    return next(new HttpError(400, 'Bad Data. Login credentials mismatched!'));
+                    return next(new HttpError(400, 'Login credentials mismatched! Please check Email and/or Password'));
                 }
             } else {
                 return next(new HttpError(400, 'User not found!'));
