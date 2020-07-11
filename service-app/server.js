@@ -31,6 +31,7 @@ server.use('/api', apiRoutes);
 server.use('/auth', authRoutes);
 
 server.use((err, req, res, next) => {
+    console.log('ErrorMiddleware', err);
     if (res.headerSent) {
         return next(err);
     }

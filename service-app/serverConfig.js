@@ -7,7 +7,8 @@ exports.dbURL = 'mongodb+srv://cas_user:mongo123@cluster0.i5f34.mongodb.net/CASd
 exports.jwtPrvtKey = 'CAS-JWT-SECRET-KEY'; // Key to encrypt JWT token
 
 // Email parameters
-exports.postmarkKey = '1c2f0ba7-b904-47d3-b567-f3ed18679c6a';
+// exports.postmarkKey = '1c2f0ba7-b904-47d3-b567-f3ed18679c6a';
+exports.postmarkKey = 'bc4ec71d-22f3-4610-9c19-8dd6ff483f52';
 exports.fromEmail = 'x19192304@student.ncirl.ie';
 
 //Facebook API Parameters

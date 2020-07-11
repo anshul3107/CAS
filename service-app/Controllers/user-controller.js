@@ -9,7 +9,7 @@ exports.newUserRegistration = (req, res, next) => {
     try {
         User.findOne({email}).then((result) => {
             if (result) {
-                return next(new HttpError(400, 'This Email is already registered with us. Please login'));
+                return next(new HttpError(400, 'This Email is already registered with us. Please login instead.'));
             } else if (!(firstName && lastName && email && password && addressLine1 && postalCode && city && country)) {
                 return next(new HttpError(400, 'Bad Data. Missing mandatory fields.'));
             } else {
@@ -26,8 +26,14 @@ exports.newUserRegistration = (req, res, next) => {
                 });
                 newUser
                     .save()
-                    .then((result) => emailController.generateTokenAndSendEmail(result, res, next))
-                    .catch(() => {
+                    .then((result) => {
+                        emailController.generateTokenAndSendEmail(result.email, res, next).then((emailStatus) => {
+                            console.log('emailStatus >>>', emailStatus);
+                            res.json({code: 200, message: 'Email Sent successfully.'});
+                        });
+                    })
+                    .catch((err) => {
+                        console.log('newUserRegistration.1', err);
                         return next(
                             new HttpError(
                                 500,
@@ -38,6 +44,7 @@ exports.newUserRegistration = (req, res, next) => {
             }
         });
     } catch (err) {
+        console.log('newUserRegistration.2', err);
         return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
     }
 };
@@ -61,6 +68,7 @@ exports.userLogin = (req, res, next) => {
             }
         })
         .catch((err) => {
+            console.log('userLogin', err);
             return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
         });
 };

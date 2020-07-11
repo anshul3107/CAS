@@ -6,27 +6,27 @@ const User = require('../Models/user');
 const HttpError = require('../Models/http-error');
 
 const sendEmail = (options) => {
-    const client = new postmark.ServerClient(serverConfig.postmarkKey);
-    return client.sendEmail({
-        From: options.from,
-        To: options.to,
-        Subject: options.subject,
-        HtmlBody: options.html,
-        TextBody: options.text
-    });
+    try {
+        const client = new postmark.ServerClient(serverConfig.postmarkKey);
+        return client.sendEmail({
+            From: options.from,
+            To: options.to,
+            Subject: options.subject,
+            HtmlBody: options.html,
+            TextBody: options.text
+        });
+    } catch (err) {
+        console.log('sendEmail', err);
+        return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
+    }
 };
 
 const generateTokenAndSendEmail = (email, next) => {
     try {
         const token = jwt.sign({email: email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'});
         const mailSubject = 'Email Verification via MyAPI';
-        const htmlStr =
-            'Please click on the ' +
-            `<a href="${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}">link</a>` +
-            ' to verify your email.';
-        const textStr =
-            'Please visit the following link to verify your email: ' +
-            `${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}`;
+        const htmlStr = `Please click on the <a href="${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}">link</a> to verify your email.`;
+        const textStr = `Please visit the following link to verify your email: ${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}`;
         return sendEmail({
             from: serverConfig.fromEmail,
             to: email,
@@ -35,6 +35,7 @@ const generateTokenAndSendEmail = (email, next) => {
             html: htmlStr
         });
     } catch (err) {
+        console.log('generateTokenAndSendEmail', err);
         return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
     }
 };
@@ -56,7 +57,7 @@ exports.emailVerificationStatus = (req, res, next) => {
                     const newUser = new User({email: email, isVerified: false});
                     newUser
                         .save()
-                        .then((result) =>
+                        .then((result) => {
                             generateTokenAndSendEmail(result.email, next)
                                 .then(() => {
                                     res.json({email: result.email, isVerified: result.isVerified});
@@ -68,8 +69,8 @@ exports.emailVerificationStatus = (req, res, next) => {
                                             "Cannot send the Email. We're looking in the issue. Please retry in sometime!"
                                         )
                                     );
-                                })
-                        )
+                                });
+                        })
                         .catch(() => {
                             return next(
                                 new HttpError(
@@ -81,7 +82,6 @@ exports.emailVerificationStatus = (req, res, next) => {
                 }
             })
             .catch((err) => {
-                console.log('err >>', err);
                 return next(
                     new HttpError(500, "Cannot read from the DB. We're looking in the issue. Please retry in sometime!")
                 );
