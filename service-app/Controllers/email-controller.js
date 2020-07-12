@@ -17,9 +17,7 @@ const sendEmail = (options, res) => {
         };
 
         sgMail.send(msg).then(
-            (response) => {
-                res.json({code: 200, message: 'Email Sent successfully.'});
-            },
+            (response) => {},
             (error) => {
                 console.error('sgMail >>>', error);
                 return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
@@ -71,18 +69,8 @@ exports.emailVerificationStatus = (req, res, next) => {
                     newUser
                         .save()
                         .then((result) => {
-                            generateTokenAndSendEmail(result.email, res, next)
-                                .then(() => {
-                                    res.json({email: result.email, isVerified: result.isVerified});
-                                })
-                                .catch(() => {
-                                    return next(
-                                        new HttpError(
-                                            500,
-                                            "Cannot send the Email. We're looking in the issue. Please retry in sometime!"
-                                        )
-                                    );
-                                });
+                            generateTokenAndSendEmail(result.email, res, next);
+                            res.json({email: result.email, isVerified: result.isVerified});
                         })
                         .catch(() => {
                             return next(
@@ -135,15 +123,7 @@ exports.emailVerificationUpdate = (req, res, next) => {
         });
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
-            email &&
-                generateTokenAndSendEmail(email, next).catch(() => {
-                    return next(
-                        new HttpError(
-                            500,
-                            "Cannot send the Email. We're looking in the issue. Please retry in sometime!"
-                        )
-                    );
-                });
+            email && generateTokenAndSendEmail(email, next);
             return email
                 ? next(
                       new HttpError(
@@ -163,4 +143,10 @@ exports.emailVerificationUpdate = (req, res, next) => {
             return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
         }
     }
+};
+
+exports.resendVerificationEmail = (req, res, next) => {
+    const email = req.query && req.query.email;
+    email && generateTokenAndSendEmail(email, next);
+    res.json({email: email, isVerified: false});
 };

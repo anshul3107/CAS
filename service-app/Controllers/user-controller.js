@@ -5,12 +5,35 @@ const emailController = require('./email-controller');
 const serverConfig = require('../serverConfig');
 
 exports.newUserRegistration = (req, res, next) => {
-    const {firstName, lastName, email, password, addressLine1, addressLine2, postalCode, city, country} = req.body;
+    const {
+        firstName,
+        lastName,
+        email,
+        password,
+        addressLine1,
+        addressLine2,
+        postalCode,
+        city,
+        country,
+        phoneNumber
+    } = req.body;
     try {
         User.findOne({email}).then((result) => {
             if (result) {
                 return next(new HttpError(400, 'This Email is already registered with us. Please login instead.'));
-            } else if (!(firstName && lastName && email && password && addressLine1 && postalCode && city && country)) {
+            } else if (
+                !(
+                    firstName &&
+                    lastName &&
+                    email &&
+                    password &&
+                    addressLine1 &&
+                    postalCode &&
+                    city &&
+                    country &&
+                    phoneNumber
+                )
+            ) {
                 return next(new HttpError(400, 'Bad Data. Missing mandatory fields.'));
             } else {
                 const newUser = new User({
@@ -22,12 +45,14 @@ exports.newUserRegistration = (req, res, next) => {
                     postalCode,
                     city,
                     country,
-                    password
+                    password,
+                    phoneNumber
                 });
                 newUser
                     .save()
                     .then((result) => {
                         emailController.generateTokenAndSendEmail(result.email, res, next);
+                        res.json({code: 200, message: 'Email Sent successfully.'});
                     })
                     .catch((err) => {
                         console.log('newUserRegistration.1', err);
@@ -68,4 +93,34 @@ exports.userLogin = (req, res, next) => {
             console.log('userLogin', err);
             return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
         });
+};
+
+exports.getUserProfile = (req, res, next) => {
+    const token = req.headers.authorization;
+    try {
+        const decoded = jwt.verify(token, serverConfig.jwtPrvtKey);
+
+        User.findOne({email: decoded.email})
+            .then((result) => {
+                if (result) {
+                    res.json(result);
+                } else {
+                    console.log('getUserProfile.1', err);
+                    return next(new HttpError(400, 'No such User exist having email as ' + decoded.email));
+                }
+            })
+            .catch((err) => {
+                console.log('getUserProfile.2', err);
+                return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
+            });
+    } catch (err) {
+        console.log('getUserProfile.3', err);
+        if (err.name === 'TokenExpiredError') {
+            next(new HttpError(400, 'Uh Oh! Your session seems to have expired. Please login again.'));
+        } else if (err.name === 'JsonWebTokenError') {
+            return next(new HttpError(400, 'Uh Oh! There seems to be a problem with the Session. Please login again.'));
+        } else {
+            return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
+        }
+    }
 };
