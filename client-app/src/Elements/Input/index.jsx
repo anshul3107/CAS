@@ -27,7 +27,7 @@ export default function ({
                 onChange={onChange}
             />
             <div className='d-flex justify-content-end'>
-                {errMessage && <span className='font-smaller font-italic text-error'>{errMessage}</span>}
+                {errMessage && <span className='fs-smaller font-italic text-error'>{errMessage}</span>}
             </div>
         </div>
     );

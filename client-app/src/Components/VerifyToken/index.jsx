@@ -19,7 +19,7 @@ export default function ({email, token}) {
         <div className='d-flex justify-content-center'>
             <div className='py-4 px-3'>
                 <Spinner isLoading={isLoading} />
-                {(!verificationStatus || (verificationStatus && !verificationStatus.isVerified)) && (
+                {isLoading && (
                     <p className='alert alert-warning'>
                         Please wait, While we are working on updating your Email Verification Status.
                     </p>

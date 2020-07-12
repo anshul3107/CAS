@@ -28,6 +28,10 @@ input {
     }
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .w-fit {
     width: fit-content;
 }
@@ -64,6 +68,10 @@ input {
     color: red;
 }
 
+.text-green {
+    color: green;
+}
+
 .border-error {
     border: 1px solid red;
 }
@@ -72,6 +80,6 @@ input {
     border: 1px solid #007bff;
 }
 
-.font-smaller {
+.fs-smaller {
     font-size: smaller;
 }

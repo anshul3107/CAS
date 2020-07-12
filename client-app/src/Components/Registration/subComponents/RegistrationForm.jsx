@@ -11,6 +11,7 @@ export default function (props) {
     const [addressLine2, setAddressLine2] = useState('');
     const [city, setCity] = useState('Dublin');
     const [postalCode, setPostalCode] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
 
     const [firstNameMsg, setFirstNameMsg] = useState('');
     const [lastNameMsg, setLastNameMsg] = useState('');
@@ -18,6 +19,7 @@ export default function (props) {
     const [passwordMsg, setPasswordMsg] = useState('');
     const [addressLine1Msg, setAddressLine1Msg] = useState('');
     const [postalCodeMsg, setPostalCodeMsg] = useState('');
+    const [phoneNumberMsg, setPhoneNumberMsg] = useState('');
 
     const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const irePostCodeRegEx = /^[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{3}$/;
@@ -31,7 +33,8 @@ export default function (props) {
         postalCode,
         city,
         country: 'Ireland',
-        password
+        password,
+        phoneNumber
     };
 
     const checkValidation = () => {
@@ -43,6 +46,10 @@ export default function (props) {
         if (!lastName) {
             setLastNameMsg('Mandatory Field. Please Enter your Last Name.');
             focusField = focusField === '' ? 'lastName' : focusField;
+        }
+        if (!phoneNumber) {
+            setLastNameMsg('Mandatory Field. Please Enter your Contact Number');
+            focusField = focusField === '' ? 'phoneNumber' : focusField;
         }
         if (!email) {
             setEmailMsg('Mandatory Field. Please Enter your Email.');
@@ -78,7 +85,7 @@ export default function (props) {
             <div className='d-flex justify-content-center'>
                 <div className='col-12 col-md-6'>
                     <h3 className='mb-3'>Create Account</h3>
-                    <span className='font-italic font-smaller text-grey'>
+                    <span className='font-italic fs-smaller text-grey'>
                         Please fill in your details. [ * marks mandatory fields]
                     </span>
                     <Input
@@ -104,6 +111,18 @@ export default function (props) {
                             setLastNameMsg('');
                         }}
                         errMessage={lastNameMsg}
+                    />
+                    <Input
+                        id='phoneNumber'
+                        labelData='* Phone Number'
+                        labelClass='text-grey pt-2px'
+                        valueData={phoneNumber}
+                        valueClass='pl-115px'
+                        onChange={(event) => {
+                            setPhoneNumber(event.target.value);
+                            setPhoneNumberMsg('');
+                        }}
+                        errMessage={phoneNumberMsg}
                     />
                     <Input
                         id='email'

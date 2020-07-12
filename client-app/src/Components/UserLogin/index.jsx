@@ -8,7 +8,7 @@ import {Spinner} from '../../Elements';
 export default function () {
     const [isLoading, setIsLoading] = useState(false);
 
-    const authData = JSON.parse(window.sessionStorage.getItem('authData'));
+    const authData = JSON.parse(window.localStorage.getItem('authData'));
     const isAlreadyLoggedin = authData && authData.authToken ? true : false;
     const [isLoggedin, setLoginStatus] = useState(false);
     const [isLoggedError, setLoginError] = useState(null);
@@ -17,7 +17,7 @@ export default function () {
         setIsLoading(true);
         API.post('/auth/token', user).then((res) => {
             if (res.authToken) {
-                window.sessionStorage.setItem('authData', JSON.stringify(res));
+                window.localStorage.setItem('authData', JSON.stringify(res));
                 setLoginStatus(true);
             } else {
                 setLoginError(res.message);
@@ -27,7 +27,7 @@ export default function () {
     };
 
     const logout = () => {
-        window.sessionStorage.removeItem('authData');
+        window.localStorage.removeItem('authData');
     };
 
     return (

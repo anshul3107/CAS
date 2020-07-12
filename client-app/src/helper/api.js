@@ -1,17 +1,19 @@
 import config from '../Configuration';
 
 const fetchAPI = (method, url, payload = null, customHeaders = {}) => {
+    const authData = JSON.parse(window.localStorage.getItem('authData'));
+    const authToken = (authData && authData.authToken) || '';
     let options = {
         method,
         headers: {
             'Content-Type': 'application/json',
+            Authorization: authToken,
             ...customHeaders
         }
     };
     if (payload) {
         options['body'] = JSON.stringify(payload);
     }
-
     return fetch(`${url.startsWith('/') ? config.API_BASE_URL : ''}${url}`, options).then((res) => res.json());
 };
 

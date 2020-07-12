@@ -8,7 +8,7 @@ import {Spinner} from '../../Elements';
 export default function () {
     const [isLoading, setIsLoading] = useState(false);
 
-    const authData = JSON.parse(window.sessionStorage.getItem('authData'));
+    const authData = JSON.parse(window.localStorage.getItem('authData'));
     const isAlreadyLoggedin = authData && authData.authToken ? true : false;
     const [isRegistered, setIsRegistered] = useState(false);
     const [userInfo, setUserInfo] = useState({});
@@ -25,7 +25,7 @@ export default function () {
     };
 
     const logout = () => {
-        window.sessionStorage.removeItem('authData');
+        window.localStorage.removeItem('authData');
     };
 
     return (
