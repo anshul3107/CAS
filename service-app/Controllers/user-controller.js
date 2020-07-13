@@ -51,7 +51,7 @@ exports.newUserRegistration = (req, res, next) => {
                 newUser
                     .save()
                     .then((result) => {
-                        emailController.generateTokenAndSendEmail(result.email, res, next);
+                        emailController.generateTokenAndSendEmail(result.email, next);
                         res.json({code: 200, message: 'Email Sent successfully.'});
                     })
                     .catch((err) => {
@@ -123,4 +123,81 @@ exports.getUserProfile = (req, res, next) => {
             return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
         }
     }
+};
+
+exports.updatePassword = (req, res, next) => {
+    const token = req.headers.authorization;
+    const currentPassword = req.body.currentPassword;
+    const newPassword = req.body.newPassword;
+    const action = req.query.action;
+    const qEmail = req.query.email;
+    const qToken = req.query.token;
+
+    try {
+        if (action === 'change') {
+            const decoded = jwt.verify(token, serverConfig.jwtPrvtKey);
+            User.findOne({email: decoded.email})
+                .then((result) => {
+                    if (result) {
+                        if (action === 'change') {
+                            if (result.password === currentPassword) {
+                                User.findOneAndUpdate({email: decoded.email}, {$set: {password: newPassword}}).then(
+                                    () => {
+                                        res.json({code: 200, message: 'Your password has been successfully updated!'});
+                                    }
+                                );
+                            } else {
+                                return next(
+                                    new HttpError(400, 'Your current password is incorrect! Please fill-in again')
+                                );
+                            }
+                        }
+                    } else {
+                        return next(new HttpError(400, 'No such User exist having email as ' + decoded.email));
+                    }
+                })
+                .catch((err) => {
+                    console.log('updatePassword.1', err);
+                    return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
+                });
+        } else if (action === 'reset') {
+            const decoded = jwt.verify(qToken, serverConfig.jwtPrvtKey);
+            if (qEmail !== decoded.email) {
+                return next(
+                    new HttpError(
+                        400,
+                        `Email doesnot match with the Token. Please Do Not alter/modify the verification parameters.`
+                    )
+                );
+            } else {
+                User.findOneAndUpdate({email: qEmail}, {$set: {password: newPassword}}).then((result) => {
+                    if (result) {
+                        res.json({code: 200, message: 'Your password has been successfully updated!'});
+                    } else {
+                        return next(new HttpError(400, 'No such User exist having email as ' + qEmail));
+                    }
+                });
+            }
+        }
+    } catch (err) {
+        console.log('updatePassword.2', err);
+        if (err.name === 'TokenExpiredError') {
+            next(new HttpError(400, 'Uh Oh! Your session seems to have expired. Please reset again.'));
+        } else if (err.name === 'JsonWebTokenError') {
+            return next(new HttpError(400, 'Uh Oh! There seems to be a problem with the Session. Please reset again.'));
+        } else {
+            return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
+        }
+    }
+};
+
+exports.forgotPassword = (req, res, next) => {
+    const email = req.query.email;
+
+    emailController.generateTokenAndSendEmail(email, next, {
+        subject: 'Reset your Password',
+        html: `Please click on the <a href="${serverConfig.clientAppURL}/account/password?action=reset&email=${email}&token">link</a> to reset your password.`,
+        text: `Please visit the following link to reset your password: ${serverConfig.clientAppURL}/account/password?action=reset&email=${email}&token`
+    });
+    res.json({code: 200, message: `To Reset your password. Please follow instructions sent to your email '${email}'`});
 };

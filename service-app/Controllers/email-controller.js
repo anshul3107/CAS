@@ -5,7 +5,7 @@ const serverConfig = require('../serverConfig');
 const User = require('../Models/user');
 const HttpError = require('../Models/http-error');
 
-const sendEmail = (options, res) => {
+const sendEmail = (options) => {
     try {
         sgMail.setApiKey(serverConfig.sgKey);
         const msg = {
@@ -29,22 +29,23 @@ const sendEmail = (options, res) => {
     }
 };
 
-const generateTokenAndSendEmail = (email, res, next) => {
+const generateTokenAndSendEmail = (email, next, mailOptions = {}) => {
     try {
         const token = jwt.sign({email: email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'});
-        const mailSubject = 'Email Verification via MyAPI';
-        const htmlStr = `Please click on the <a href="${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}">link</a> to verify your email.`;
-        const textStr = `Please visit the following link to verify your email: ${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}`;
-        return sendEmail(
-            {
-                from: serverConfig.fromEmail,
-                to: email,
-                subject: mailSubject,
-                text: textStr,
-                html: htmlStr
-            },
-            res
-        );
+        const mailSubject = mailOptions.subject || 'Email Verification via MyAPI';
+        const html =
+            mailOptions.html.replace('token', `token=${token}`) ||
+            `Please click on the <a href="${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}">link</a> to verify your email.`;
+        const text =
+            mailOptions.text.replace('token', `token=${token}`) ||
+            `Please visit the following link to verify your email: ${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}`;
+        return sendEmail({
+            from: serverConfig.fromEmail,
+            to: email,
+            subject: mailSubject,
+            text,
+            html
+        });
     } catch (err) {
         console.log('generateTokenAndSendEmail', err);
         return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
@@ -69,7 +70,7 @@ exports.emailVerificationStatus = (req, res, next) => {
                     newUser
                         .save()
                         .then((result) => {
-                            generateTokenAndSendEmail(result.email, res, next);
+                            generateTokenAndSendEmail(result.email, next);
                             res.json({email: result.email, isVerified: result.isVerified});
                         })
                         .catch(() => {
@@ -109,7 +110,11 @@ exports.emailVerificationUpdate = (req, res, next) => {
                 } else {
                     User.findOneAndUpdate({email: decoded.email}, {$set: {isVerified: true}}, {new: true})
                         .then((result) => {
-                            res.json({email: result.email, isVerified: result.isVerified});
+                            if (result) {
+                                res.json({email: result.email, isVerified: result.isVerified});
+                            } else {
+                                return next(new HttpError(400, 'No such User exist having email as ' + decoded.email));
+                            }
                         })
                         .catch((err) => {
                             return next(
