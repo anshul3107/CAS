@@ -38,7 +38,6 @@ export default function () {
                 <UserProfile profile={profile} />
                 <ContactDetails profile={profile} />
             </>
-            )
         </div>
     );
 }

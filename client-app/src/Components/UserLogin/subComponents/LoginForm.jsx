@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
 
-import {Input} from '../../../Elements';
+import {Input, Button} from '../../../Elements';
 
 export default function (props) {
     const [email, setEmail] = useState('');
@@ -55,6 +56,7 @@ export default function (props) {
                     />
                     <Input
                         id='password'
+                        wrapClass='mb-1'
                         valueType='password'
                         labelData='* Password'
                         labelClass='text-grey pt-2px'
@@ -68,15 +70,20 @@ export default function (props) {
                         errMessage={passwordMsg}
                     />
                     <div className='d-flex justify-content-end'>
-                        <button
-                            className='col-12 col-md-4 box btn btn-primary'
-                            onClick={() => {
-                                if (checkValidation()) {
-                                    props.onSubmit(userInfo);
-                                }
-                            }}>
-                            Log In
-                        </button>
+                        <div className='text-right'>
+                            <Link className='fs-smaller' to='/forgot/password'>
+                                <i>Forgot your password ?</i>
+                            </Link>
+                            <Button
+                                buttonLabel='Log In'
+                                buttonClass='box btn btn-primary w-100 mt-1'
+                                onClick={() => {
+                                    if (checkValidation()) {
+                                        props.onSubmit(userInfo);
+                                    }
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

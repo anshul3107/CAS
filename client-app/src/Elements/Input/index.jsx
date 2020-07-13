@@ -3,7 +3,7 @@ import './style.scss';
 
 export default function ({
     id = '',
-    wrapClass = '',
+    wrapClass = 'mb-2',
     labelData = '',
     labelClass = '',
     valueData = '',
@@ -14,7 +14,7 @@ export default function ({
     onChange = (event) => console.log(event.target.value)
 }) {
     return (
-        <div className={`input mb-2 ${wrapClass}`}>
+        <div className={`input ${wrapClass}`}>
             <div className={`position-absolute ${labelClass} ${labelData.startsWith('*') ? 'ml-1' : 'ml-2 pl-2'}`}>
                 {labelData}
             </div>

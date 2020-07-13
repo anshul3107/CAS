@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
 
 import API from '../../../helper/api';
-import {Label} from '../../../Elements';
+import {Label, Button} from '../../../Elements';
 
 export default function ({profile}) {
     const [emailedRes, setEmailedRes] = useState(null);
@@ -48,6 +49,12 @@ export default function ({profile}) {
                     </p>
                 </div>
             )}
+            <div className='mt-4'>
+                <Button
+                    buttonClass='btn-info'
+                    buttonLabel={<Link to='/account/password?action=change'>Change Password</Link>}
+                />
+            </div>
         </div>
     );
 }
