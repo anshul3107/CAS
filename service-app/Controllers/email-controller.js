@@ -34,10 +34,10 @@ const generateTokenAndSendEmail = (email, next, mailOptions = {}) => {
         const token = jwt.sign({email: email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'});
         const mailSubject = mailOptions.subject || 'Email Verification via MyAPI';
         const html =
-            mailOptions.html.replace('token', `token=${token}`) ||
+            (mailOptions.html && mailOptions.html.replace('token', `token=${token}`)) ||
             `Please click on the <a href="${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}">link</a> to verify your email.`;
         const text =
-            mailOptions.text.replace('token', `token=${token}`) ||
+            (mailOptions.text && mailOptions.text.replace('token', `token=${token}`)) ||
             `Please visit the following link to verify your email: ${serverConfig.clientAppURL}/verify/token?email=${email}&token=${token}`;
         return sendEmail({
             from: serverConfig.fromEmail,
