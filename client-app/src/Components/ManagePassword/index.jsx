@@ -32,7 +32,12 @@ export default function ({action, email, token}) {
             setConfirmPassword('');
             focusField = focusField === '' ? 'newPassword' : focusField;
         }
-
+        if (currentPassword === newPassword) {
+            setErrMsg('New password must be different from Current Password!');
+            setNewPassword('');
+            setConfirmPassword('');
+            focusField = focusField === '' ? 'newPassword' : focusField;
+        }
         if (focusField && document.getElementById(focusField)) {
             document.getElementById(focusField).focus();
         }
