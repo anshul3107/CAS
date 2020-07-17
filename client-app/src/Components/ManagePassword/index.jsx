@@ -28,12 +28,9 @@ export default function ({action, email, token}) {
         }
         if (newPassword !== confirmPassword) {
             setErrMsg('Values provided for New Password and Confirm Password did not match!');
-            setNewPassword('');
-            setConfirmPassword('');
-            focusField = focusField === '' ? 'newPassword' : focusField;
-        }
-        if (currentPassword === newPassword) {
-            setErrMsg('New password must be different from Current Password!');
+            if (currentPassword === newPassword) {
+                setErrMsg('New password must be different from Current Password!');
+            }
             setNewPassword('');
             setConfirmPassword('');
             focusField = focusField === '' ? 'newPassword' : focusField;
