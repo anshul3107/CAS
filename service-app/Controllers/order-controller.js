@@ -16,7 +16,7 @@ exports.newOrder = (req, res, next) => {
                 const orderObj = new Order({
                     senderId: result._id,
                     name: name,
-                    addressLine1, // another way to assign value with name same as the same Key
+                    addressLine1, // another way to assign value with name same as the Key => addressLine1: addressLine1
                     addressLine2,
                     email,
                     postalCode,
@@ -25,14 +25,26 @@ exports.newOrder = (req, res, next) => {
                     phoneNumber
                 });
 
-                orderObj.save().then(
-                    res.json({
-                        code: 200,
-                        message: 'Order placed successfully. Please pay at the time of order pickup.'
-                    })
-                );
+                orderObj
+                    .save()
+                    .then(
+                        res.json({
+                            code: 200,
+                            message: 'Order placed successfully. Please pay at the time of order pickup.'
+                        })
+                    )
+                    .catch(() => {
+                        console.log('newOrder.1', err);
+                        return next(
+                            new HttpError(
+                                500,
+                                "Cannot update in the DB. We're looking in the issue. Please retry in sometime!"
+                            )
+                        );
+                    });
             });
         } else {
+            console.log('newOrder.2', err);
             return next(new HttpError(400, 'Bad Data. Missing mandatory fields.'));
         }
     } catch (err) {
@@ -46,3 +58,7 @@ exports.newOrder = (req, res, next) => {
         }
     }
 };
+
+exports.ordersBySenderId = (req, res, next) => {};
+
+exports.orderByOrderId = (req, res, next) => {};
