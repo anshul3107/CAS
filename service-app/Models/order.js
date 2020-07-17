@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const orderSchema = new mongoose.Schema({
     senderId: String,
@@ -9,7 +10,8 @@ const orderSchema = new mongoose.Schema({
     postalCode: {type: String, required: true},
     country: {type: String, required: true},
     city: {type: String, required: true},
-    phoneNumber: {type: String, required: true}
+    phoneNumber: {type: String, required: true},
+    createdAt: {type: String, default: moment().format('DDMMYYYY hh:mm:ss')}
 });
 
 module.exports = mongoose.model('Order', orderSchema);

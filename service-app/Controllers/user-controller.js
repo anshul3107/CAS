@@ -20,7 +20,35 @@ exports.newUserRegistration = (req, res, next) => {
     try {
         User.findOne({email}).then((result) => {
             if (result) {
-                return next(new HttpError(400, 'This Email is already registered with us. Please login instead.'));
+                if (!result.password) {
+                    User.findOneAndUpdate(
+                        {email: email},
+                        {
+                            $set: {
+                                firstName: firstName,
+                                lastName: lastName,
+                                password: password,
+                                addressLine1: addressLine1,
+                                addressLine2: addressLine2,
+                                postalCode: postalCode,
+                                city: city,
+                                country: country,
+                                phoneNumber: phoneNumber
+                            }
+                        },
+                        {new: true}
+                    )
+                        .then(
+                            res.json({
+                                code: 201,
+                                message: 'User successfully registered.'
+                            })
+                        )
+                        .catch(() => {
+                            console.log(err);
+                        });
+                } else
+                    return next(new HttpError(400, 'This Email is already registered with us. Please login instead.'));
             } else if (
                 !(
                     firstName &&
