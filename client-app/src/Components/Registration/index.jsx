@@ -21,6 +21,12 @@ export default function () {
             setRegistrationResponse(() => res);
             setIsRegistered(true);
             setIsLoading(false);
+
+            if (res.code === 201 || res.code === 200) {
+                setTimeout(() => {
+                    window.location.pathname = '/user/login';
+                }, 4000);
+            }
         });
     };
 
@@ -55,15 +61,14 @@ export default function () {
                             {
                                 'Please verify the email to complete the Process. Verification token will be active for 2 hours.'
                             }
-                            <hr />
-                            <Link to='/home'>
-                                <strong>Click here</strong>
-                            </Link>
-                            {' to navigate back to Home Page'}
                         </p>
                     )}
-                {registrationResponse && registrationResponse.code && registrationResponse.code !== 200 && (
+                {registrationResponse && registrationResponse.code && registrationResponse.code === 201 ? (
+                    <p className='w-fit alert alert-success'>{registrationResponse.message}</p>
+                ) : registrationResponse && registrationResponse.code && registrationResponse.code !== 200 ? (
                     <p className='w-fit alert alert-danger'>{registrationResponse.message}</p>
+                ) : (
+                    ''
                 )}
             </div>
         </>
