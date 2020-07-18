@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import moment from 'moment';
 
 import API from '../../helper/api';
 import {Spinner, Label} from '../../Elements';
@@ -29,7 +30,9 @@ export default function ({orderId}) {
               </div>
               <span className='text-gray d-flex align-items-end mb-2'>
                 created on
-                <span className='ml-1 text-black'>{`${orderDetails.createdAt}`}</span>
+                <span className='ml-1 text-black'>{`${moment(orderDetails.createdAt, 'DDMMYYYYHHmmss').format(
+                  'DD-MMM @ HH:mm:ss'
+                )}`}</span>
               </span>
             </div>
             <hr className='mt-0' />
