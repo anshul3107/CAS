@@ -1,5 +1,6 @@
 const User = require('../Models/user');
 const HttpError = require('../Models/http-error');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const emailController = require('./email-controller');
 const serverConfig = require('../serverConfig');
@@ -21,32 +22,34 @@ exports.newUserRegistration = (req, res, next) => {
         User.findOne({email}).then((result) => {
             if (result) {
                 if (!result.password) {
-                    User.findOneAndUpdate(
-                        {email: email},
-                        {
-                            $set: {
-                                firstName: firstName,
-                                lastName: lastName,
-                                password: password,
-                                addressLine1: addressLine1,
-                                addressLine2: addressLine2,
-                                postalCode: postalCode,
-                                city: city,
-                                country: country,
-                                phoneNumber: phoneNumber
-                            }
-                        },
-                        {new: true}
-                    )
-                        .then(
-                            res.json({
-                                code: 201,
-                                message: 'User successfully registered.'
-                            })
+                    bcrypt.hash(password, 10).then((hashedPassword) => {
+                        User.findOneAndUpdate(
+                            {email: email},
+                            {
+                                $set: {
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    password: hashedPassword,
+                                    addressLine1: addressLine1,
+                                    addressLine2: addressLine2,
+                                    postalCode: postalCode,
+                                    city: city,
+                                    country: country,
+                                    phoneNumber: phoneNumber
+                                }
+                            },
+                            {new: true}
                         )
-                        .catch(() => {
-                            console.log(err);
-                        });
+                            .then(
+                                res.json({
+                                    code: 201,
+                                    message: 'User successfully registered.'
+                                })
+                            )
+                            .catch(() => {
+                                console.log(err);
+                            });
+                    });
                 } else
                     return next(new HttpError(400, 'This Email is already registered with us. Please login instead.'));
             } else if (
@@ -104,15 +107,19 @@ exports.userLogin = (req, res, next) => {
     User.findOne({email: email})
         .then((result) => {
             if (result) {
-                if (result.password === password) {
-                    res.json({
-                        email,
-                        name: result.firstName,
-                        authToken: jwt.sign({email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'})
-                    });
-                } else {
-                    return next(new HttpError(400, 'Login credentials mismatched! Please check Email and/or Password'));
-                }
+                bcrypt.compare(password, result.password).then((isMatch) => {
+                    if (isMatch) {
+                        res.json({
+                            email,
+                            name: result.firstName,
+                            authToken: jwt.sign({email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'})
+                        });
+                    } else {
+                        return next(
+                            new HttpError(400, 'Login credentials mismatched! Please check Email and/or Password')
+                        );
+                    }
+                });
             } else {
                 return next(new HttpError(400, 'User not found!'));
             }
@@ -133,7 +140,7 @@ exports.getUserProfile = (req, res, next) => {
                 if (result) {
                     res.json(result);
                 } else {
-                    console.log('getUserProfile.1', err);
+                    console.log('getUserProfile.1');
                     return next(new HttpError(400, 'No such User exist having email as ' + decoded.email));
                 }
             })
@@ -168,17 +175,25 @@ exports.updatePassword = (req, res, next) => {
                 .then((result) => {
                     if (result) {
                         if (action === 'change') {
-                            if (result.password === currentPassword) {
-                                User.findOneAndUpdate({email: decoded.email}, {$set: {password: newPassword}}).then(
-                                    () => {
-                                        res.json({code: 200, message: 'Your password has been successfully updated!'});
-                                    }
-                                );
-                            } else {
-                                return next(
-                                    new HttpError(400, 'Your current password is incorrect! Please fill-in again')
-                                );
-                            }
+                            bcrypt.compare(currentPassword, result.password).then((isMatch) => {
+                                if (isMatch) {
+                                    bcrypt.hash(newPassword, 10).then((hashedPassword) => {
+                                        User.findOneAndUpdate(
+                                            {email: decoded.email},
+                                            {$set: {password: hashedPassword}}
+                                        ).then(() => {
+                                            res.json({
+                                                code: 200,
+                                                message: 'Your password has been successfully updated!'
+                                            });
+                                        });
+                                    });
+                                } else {
+                                    return next(
+                                        new HttpError(400, 'Your current password is incorrect! Please fill-in again')
+                                    );
+                                }
+                            });
                         }
                     } else {
                         return next(new HttpError(400, 'No such User exist having email as ' + decoded.email));
@@ -198,12 +213,14 @@ exports.updatePassword = (req, res, next) => {
                     )
                 );
             } else {
-                User.findOneAndUpdate({email: qEmail}, {$set: {password: newPassword}}).then((result) => {
-                    if (result) {
-                        res.json({code: 200, message: 'Your password has been successfully updated!'});
-                    } else {
-                        return next(new HttpError(400, 'No such User exist having email as ' + qEmail));
-                    }
+                bcrypt.hash(newPassword, 10).then((hashedPassword) => {
+                    User.findOneAndUpdate({email: qEmail}, {$set: {password: hashedPassword}}).then((result) => {
+                        if (result) {
+                            res.json({code: 200, message: 'Your password has been successfully updated!'});
+                        } else {
+                            return next(new HttpError(400, 'No such User exist having email as ' + qEmail));
+                        }
+                    });
                 });
             }
         }
