@@ -1,93 +1,123 @@
 label {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 a {
+  color: black;
+
+  &:hover {
     color: black;
+    text-decoration: none;
+  }
 
-    &:hover {
-        color: black;
-        text-decoration: none;
-    }
-
-    &:visited {
-        color: black;
-    }
+  &:visited {
+    color: black;
+  }
 }
 
 input {
+  color: grey;
+
+  &:focus {
+    outline: none;
+    color: black;
+  }
+
+  &:disabled {
     color: grey;
-
-    &:focus {
-        outline: none;
-        color: black;
-    }
-
-    &:disabled {
-        color: grey;
-    }
+  }
 }
 
 .cursor-pointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .w-fit {
-    width: fit-content;
+  width: fit-content;
 }
 
 .box {
-    border-radius: 12px;
+  border-radius: 12px;
 }
 
 .pt-2px {
-    padding-top: 2px;
+  padding-top: 2px;
 }
 
 .pl-75px {
-    padding-left: 75px;
+  padding-left: 75px;
 }
 
 .pl-95px {
-    padding-left: 95px;
+  padding-left: 95px;
 }
 
 .pl-115px {
-    padding-left: 115px;
+  padding-left: 115px;
+}
+
+.pl-125px {
+  padding-left: 125px;
 }
 
 .pl-150px {
-    padding-left: 150px;
+  padding-left: 150px;
 }
 
-.text-grey {
-    color: darkgray;
+.text-grey,
+.text-gray {
+  color: darkgray;
 }
 
 .text-black {
-    color: #000000;
+  color: #000000;
 }
 
 .text-blue {
-    color: #007bff;
+  color: #007bff;
 }
 
 .text-error {
-    color: red;
+  color: red;
 }
 
 .text-green {
-    color: green;
+  color: green;
 }
 
 .border-error {
-    border: 1px solid red;
+  border: 1px solid red;
 }
 
 .border-blue {
-    border: 1px solid #007bff;
+  border: 1px solid #007bff;
 }
 
 .fs-smaller {
-    font-size: smaller;
+  font-size: smaller;
+}
+
+.fs-bolder {
+  font-weight: bolder;
+}
+
+.fs-lighter {
+  font-weight: lighter;
+}
+
+.shaded-underline {
+  border-bottom: 2px gray solid;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.hover-bold-black {
+  &:hover {
+    color: black;
+    font-weight: bolder;
+  }
+}
+
+.z-100 {
+  z-index: 100;
 }
