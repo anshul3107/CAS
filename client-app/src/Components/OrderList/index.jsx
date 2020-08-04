@@ -21,7 +21,14 @@ export default function () {
     <>
       <Spinner isLoading={isLoading} />
       <div className='accnt-details mx-5'>
-        <h2>Order List</h2>
+        <div className='d-flex justify-content-between align-items-end'>
+          <h2 className='mb-0'>Order List</h2>
+          <span>
+            <Link to='/order/new' className='fs-bolder'>
+              {'Place a New Order'}
+            </Link>
+          </span>
+        </div>
         <hr />
         {orderList && orderList.length === 0 ? (
           <p className='alert alert-info'>You have not placed any Orders yet!</p>
