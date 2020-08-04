@@ -27,12 +27,13 @@ exports.newOrder = (req, res, next) => {
 
                 orderObj
                     .save()
-                    .then(
+                    .then((order) => {
                         res.json({
                             code: 200,
+                            orderId: order.id,
                             message: 'Order placed successfully. Please pay at the time of order pickup.'
-                        })
-                    )
+                        });
+                    })
                     .catch(() => {
                         console.log('newOrder.1', err);
                         return next(
@@ -112,19 +113,19 @@ exports.ordersBySenderId = (req, res, next) => {
 
 exports.orderByOrderId = (req, res, next) => {
     const token = req.headers && req.headers.authorization;
-    const orderId = req.path && req.path.orderId;
+    const orderId = req.params && req.params.orderId;
     try {
         const decoded = jwt.verify(token, serverConfig.jwtPrvtKey);
 
         User.findOne({email: decoded.email}).then((user) => {
             if (user) {
-                Order.findOne({id: orderId, senderId: user.id})
+                Order.findById(orderId)
                     .then((order) => {
-                        if (order) {
+                        if (order && order.senderId === user.id) {
                             res.json(order);
                         } else {
                             console.log('orderByOrderId.0');
-                            return next(new HttpError(400, 'No such Oder exist having Order-id as ' + orderId));
+                            return next(new HttpError(400, 'No such Order exist having OrderId as ' + orderId));
                         }
                     })
                     .catch((err) => {
