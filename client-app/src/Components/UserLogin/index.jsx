@@ -17,7 +17,7 @@ export default function () {
     API.post('/auth/token', user).then((res) => {
       if (res.authToken) {
         window.localStorage.setItem('authData', JSON.stringify(res));
-        window.location.pathname = '/order/new';
+        window.location = '/order/new';
       } else {
         setLoginError(res.message);
       }

@@ -42,7 +42,7 @@ export default function (props) {
                     <span
                       onClick={() => {
                         window.localStorage.removeItem('authData');
-                        window.location.pathname = '/user/login';
+                        window.location = '/user/login';
                         setShowMenu(!showMenu);
                       }}
                       className='d-flex align-content-center cursor-pointer mt-2 shaded-underline w-fit hover-bold-black'>

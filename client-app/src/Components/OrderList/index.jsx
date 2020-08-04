@@ -41,7 +41,7 @@ export default function () {
                     key={order.orderId}
                     className='border box py-2 px-3 mb-3 cursor-pointer'
                     onClick={() => {
-                      window.location.pathname = `/order/details/${order.orderId}`;
+                      window.location = `/order/details/${order.orderId}`;
                     }}>
                     <div className='d-flex justify-content-between'>
                       <div>
