@@ -75,7 +75,6 @@ export default function () {
   const submitNewOrder = () => {
     API.post('/api/order/new', orderObj).then((res) => {
       setNewOrderRes(() => res);
-      console.log('Order created >> ', res);
     });
   };
 
