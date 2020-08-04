@@ -48,7 +48,7 @@ export default function (props) {
       focusField = focusField === '' ? 'lastName' : focusField;
     }
     if (!phoneNumber) {
-      setLastNameMsg('Mandatory Field. Please Enter your Contact Number');
+      setPhoneNumberMsg('Mandatory Field. Please Enter your Contact Number');
       focusField = focusField === '' ? 'phoneNumber' : focusField;
     }
     if (!email) {
