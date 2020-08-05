@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
-import {Input} from '../../../Elements';
+import {Input, Dropdown, Spinner} from '../../../Elements';
+import API from '../../../helper/api';
 
 export default function (props) {
   const [firstName, setFirstName] = useState('');
@@ -9,9 +10,12 @@ export default function (props) {
   const [password, setPassword] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
-  const [city, setCity] = useState('Dublin');
+  const [city, setCity] = useState('');
+  const [cityList, setCityList] = useState([]);
+  const [cityLocation, setCityLocation] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isLoading, setIsLoading] = useState(null);
 
   const [firstNameMsg, setFirstNameMsg] = useState('');
   const [lastNameMsg, setLastNameMsg] = useState('');
@@ -24,6 +28,21 @@ export default function (props) {
   const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const irePostCodeRegEx = /^[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{3}$/;
 
+  useEffect(() => {
+    setIsLoading(true);
+    API.get('/api/cityList').then((res) => {
+      setIsLoading(false);
+      setCityList(() =>
+        res.map((city) => {
+          return {
+            label: city.name,
+            value: `${city.name};${city.lat};${city.long}`
+          };
+        })
+      );
+    });
+  }, []);
+
   const userInfo = {
     firstName,
     lastName,
@@ -32,6 +51,7 @@ export default function (props) {
     addressLine2,
     postalCode,
     city,
+    cityLocation,
     country: 'Ireland',
     password,
     phoneNumber
@@ -81,134 +101,140 @@ export default function (props) {
   };
 
   return (
-    <div className='registration'>
-      <div className='d-flex justify-content-center'>
-        <div className='col-12 col-md-6'>
-          <h3 className='mb-3'>Create Account</h3>
-          <span className='font-italic fs-smaller text-grey'>
-            Please fill in your details. [ * marks mandatory fields]
-          </span>
-          <Input
-            id='firstName'
-            labelData='* First Name'
-            labelClass='text-grey pt-2px'
-            valueData={firstName}
-            valueClass='pl-125px'
-            onChange={(event) => {
-              setFirstName(event.target.value);
-              setFirstNameMsg('');
-            }}
-            errMessage={firstNameMsg}
-          />
-          <Input
-            id='lastName'
-            labelData='* Last Name'
-            labelClass='text-grey pt-2px'
-            valueData={lastName}
-            valueClass='pl-125px'
-            onChange={(event) => {
-              setLastName(event.target.value);
-              setLastNameMsg('');
-            }}
-            errMessage={lastNameMsg}
-          />
-          <Input
-            id='phoneNumber'
-            labelData='* Phone Number'
-            labelClass='text-grey pt-2px'
-            valueData={phoneNumber}
-            valueClass='pl-125px'
-            onChange={(event) => {
-              setPhoneNumber(event.target.value);
-              setPhoneNumberMsg('');
-            }}
-            errMessage={phoneNumberMsg}
-          />
-          <Input
-            id='email'
-            labelData='* Email'
-            labelClass='text-grey pt-2px'
-            valueData={email}
-            valueClass='pl-125px'
-            onChange={(event) => {
-              setEmail(event.target.value);
-              setEmailMsg('');
-            }}
-            errMessage={emailMsg}
-          />
-          <Input
-            id='password'
-            valueType='password'
-            labelData='* Password'
-            labelClass='text-grey pt-2px'
-            valueData={password}
-            valueClass='pl-125px'
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-            errMessage={passwordMsg}
-          />
-          <Input
-            id='addressLine1'
-            labelData='* Address'
-            labelClass='text-grey pt-2px'
-            valueData={addressLine1}
-            valueClass='pl-125px'
-            onChange={(event) => {
-              setAddressLine1(event.target.value);
-              setAddressLine1Msg('');
-            }}
-            errMessage={addressLine1Msg}
-          />
-          <Input
-            id='addressLine2'
-            labelData='Address cont.'
-            labelClass='text-grey pt-2px'
-            valueData={addressLine2}
-            valueClass='pl-125px'
-            onChange={(event) => setAddressLine2(event.target.value)}
-          />
-          <Input
-            id='postalCode'
-            labelData='* Postal Code'
-            labelClass='text-grey pt-2px'
-            valueData={postalCode.toUpperCase()}
-            valueClass='pl-125px'
-            onChange={(event) => {
-              setPostalCode(event.target.value.toUpperCase());
-              setPostalCodeMsg('');
-            }}
-            errMessage={postalCodeMsg}
-          />
-          <Input
-            id='city'
-            labelData='City'
-            labelClass='text-grey pt-2px'
-            valueData={city}
-            valueClass='pl-125px'
-            onChange={(event) => setCity(event.target.value)}
-          />
-          <Input
-            id='country'
-            isDisabled={true}
-            labelData='Country'
-            labelClass='text-grey pt-2px'
-            valueData='Ireland'
-            valueClass='pl-125px'
-          />
-          <div className='d-flex justify-content-end'>
-            <button
-              className='col-12 col-md-4 box btn btn-primary'
-              onClick={() => {
-                if (checkValidation()) {
-                  props.onSubmit(userInfo);
-                }
-              }}>
-              Submit
-            </button>
+    <>
+      <Spinner isLoading={isLoading} />
+      <div className='registration'>
+        <div className='d-flex justify-content-center'>
+          <div className='col-12 col-md-6'>
+            <h3 className='mb-3'>Create Account</h3>
+            <span className='font-italic fs-smaller text-grey'>
+              Please fill in your details. [ * marks mandatory fields]
+            </span>
+            <Input
+              id='firstName'
+              labelData='* First Name'
+              labelClass='text-grey pt-2px'
+              valueData={firstName}
+              valueClass='pl-125px'
+              onChange={(event) => {
+                setFirstName(event.target.value);
+                setFirstNameMsg('');
+              }}
+              errMessage={firstNameMsg}
+            />
+            <Input
+              id='lastName'
+              labelData='* Last Name'
+              labelClass='text-grey pt-2px'
+              valueData={lastName}
+              valueClass='pl-125px'
+              onChange={(event) => {
+                setLastName(event.target.value);
+                setLastNameMsg('');
+              }}
+              errMessage={lastNameMsg}
+            />
+            <Input
+              id='phoneNumber'
+              labelData='* Phone Number'
+              labelClass='text-grey pt-2px'
+              valueData={phoneNumber}
+              valueClass='pl-125px'
+              onChange={(event) => {
+                setPhoneNumber(event.target.value);
+                setPhoneNumberMsg('');
+              }}
+              errMessage={phoneNumberMsg}
+            />
+            <Input
+              id='email'
+              labelData='* Email'
+              labelClass='text-grey pt-2px'
+              valueData={email}
+              valueClass='pl-125px'
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setEmailMsg('');
+              }}
+              errMessage={emailMsg}
+            />
+            <Input
+              id='password'
+              valueType='password'
+              labelData='* Password'
+              labelClass='text-grey pt-2px'
+              valueData={password}
+              valueClass='pl-125px'
+              onChange={(event) => {
+                setPassword(event.target.value);
+              }}
+              errMessage={passwordMsg}
+            />
+            <Input
+              id='addressLine1'
+              labelData='* Address'
+              labelClass='text-grey pt-2px'
+              valueData={addressLine1}
+              valueClass='pl-125px'
+              onChange={(event) => {
+                setAddressLine1(event.target.value);
+                setAddressLine1Msg('');
+              }}
+              errMessage={addressLine1Msg}
+            />
+            <Input
+              id='addressLine2'
+              labelData='Address cont.'
+              labelClass='text-grey pt-2px'
+              valueData={addressLine2}
+              valueClass='pl-125px'
+              onChange={(event) => setAddressLine2(event.target.value)}
+            />
+            <Input
+              id='postalCode'
+              labelData='* Postal Code'
+              labelClass='text-grey pt-2px'
+              valueData={postalCode.toUpperCase()}
+              valueClass='pl-125px'
+              onChange={(event) => {
+                setPostalCode(event.target.value.toUpperCase());
+                setPostalCodeMsg('');
+              }}
+              errMessage={postalCodeMsg}
+            />
+            <Dropdown
+              label='City'
+              labelClass='text-grey pt-2px'
+              options={cityList}
+              placeholderClass='pl-122px'
+              onSelect={(res) => {
+                const cityInfo = res.value.split(';');
+                setCity(cityInfo[0]);
+                setCityLocation(`${cityInfo[1]},${cityInfo[2]}`);
+              }}
+            />
+            <Input
+              id='country'
+              isDisabled={true}
+              labelData='Country'
+              labelClass='text-grey pt-2px'
+              valueData='Ireland'
+              valueClass='pl-125px'
+            />
+            <div className='d-flex justify-content-end'>
+              <button
+                className='col-12 col-md-4 box btn btn-primary'
+                onClick={() => {
+                  if (checkValidation()) {
+                    props.onSubmit(userInfo);
+                  }
+                }}>
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
