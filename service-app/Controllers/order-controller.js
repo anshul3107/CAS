@@ -23,12 +23,12 @@ exports.newOrder = (req, res, next) => {
                 )
                     .then((res) => res.json())
                     .then((json) => {
-                        let distance;
+                        let distanceInMtrs;
                         let courierCost = 7.99;
                         if (json) {
-                            distance = json.rows[0].elements[0].distance.value;
+                            distanceInMtrs = json.rows[0].elements[0].distance.value;
                         }
-                        courierCost = distance / 10000 > courierCost ? distance / 10000 : courierCost;
+                        courierCost = distanceInMtrs / 10000 > courierCost ? distanceInMtrs / 10000 : courierCost;
                         const orderObj = new Order({
                             senderId: result.id,
                             name: name,
