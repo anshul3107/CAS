@@ -1,37 +1,53 @@
 const jwt = require('jsonwebtoken');
 const serverConfig = require('../serverConfig');
+const fetch = require('node-fetch');
 const User = require('../Models/user');
 const Order = require('../Models/order');
 const HttpError = require('../Models/http-error');
 
 exports.newOrder = (req, res, next) => {
     const token = req.headers && req.headers.authorization;
-    const {name, addressLine1, addressLine2, email, postalCode, country, city, phoneNumber} = req.body;
+    const {name, addressLine1, addressLine2, email, postalCode, country, city, phoneNumber, cityLocation} = req.body;
+    const {distMatrixEndpoint, distMatrixAPIKey} = serverConfig;
 
     try {
         if (name && addressLine1 && email && postalCode && country && city && phoneNumber) {
             const decoded = jwt.verify(token, serverConfig.jwtPrvtKey);
 
             User.findOne({email: decoded.email}).then((result) => {
-                const orderObj = new Order({
-                    senderId: result.id,
-                    name: name,
-                    addressLine1, // another way to assign value with name same as the Key => addressLine1: addressLine1
-                    addressLine2,
-                    email,
-                    postalCode,
-                    country,
-                    city,
-                    phoneNumber
-                });
+                const senderLocation = result.location;
+                const receiverLocation = cityLocation;
 
-                orderObj
-                    .save()
-                    .then((order) => {
-                        res.json({
-                            code: 200,
-                            orderId: order.id,
-                            message: 'Order placed successfully. Please pay at the time of order pickup.'
+                fetch(
+                    `${distMatrixEndpoint}?origins=${senderLocation}&destinations=${receiverLocation}&key=${distMatrixAPIKey}`
+                )
+                    .then((res) => res.json())
+                    .then((json) => {
+                        let distance;
+                        let courierCost = 7.99;
+                        if (json) {
+                            distance = json.rows[0].elements[0].distance.value;
+                        }
+                        courierCost = distance / 10000 > courierCost ? distance / 10000 : courierCost;
+                        const orderObj = new Order({
+                            senderId: result.id,
+                            name: name,
+                            addressLine1, // another way to assign value with name same as the Key => addressLine1: addressLine1
+                            addressLine2,
+                            email,
+                            postalCode,
+                            country,
+                            city,
+                            location: cityLocation,
+                            phoneNumber,
+                            charges: courierCost
+                        });
+                        orderObj.save().then((order) => {
+                            res.json({
+                                code: 200,
+                                orderId: order.id,
+                                message: `Order placed successfully. Please pay €${courierCost} at the time of order pickup.`
+                            });
                         });
                     })
                     .catch(() => {

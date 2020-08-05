@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
     postalCode: String,
     country: String,
     city: String,
+    location: String,
     phoneNumber: String,
     isVerified: {type: Boolean, default: false}
 });

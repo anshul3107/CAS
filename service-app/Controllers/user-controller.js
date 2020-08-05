@@ -15,6 +15,7 @@ exports.newUserRegistration = (req, res, next) => {
         addressLine2,
         postalCode,
         city,
+        cityLocation,
         country,
         phoneNumber
     } = req.body;
@@ -34,6 +35,7 @@ exports.newUserRegistration = (req, res, next) => {
                                     addressLine2: addressLine2,
                                     postalCode: postalCode,
                                     city: city,
+                                    location: cityLocation,
                                     country: country,
                                     phoneNumber: phoneNumber
                                 }
@@ -75,6 +77,7 @@ exports.newUserRegistration = (req, res, next) => {
                     addressLine2,
                     postalCode,
                     city,
+                    location: cityLocation,
                     country,
                     password,
                     phoneNumber

@@ -2,13 +2,17 @@ exports.serverPort = 9000;
 
 exports.apiKey = 'CAS-API-KEY-b904-47d3';
 
-exports.dbURL = 'mongodb+srv://cas_user:mongo123@cluster0.i5f34.mongodb.net/CASdb?retryWrites=true&w=majority';
+exports.dbURL = 'mongodb+srv://cas_user:mongo123@cluster0.i5f34.mongodb.net/CASTestdb?retryWrites=true&w=majority';
 
 exports.jwtPrvtKey = 'CAS-JWT-SECRET-KEY'; // Key to encrypt JWT token
 
 // Email parameters
 exports.sgKey = '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';
 exports.fromEmail = 'x19192304@student.ncirl.ie';
+
+//Google Distance Matrix API
+exports.distMatrixAPIKey = 'AIzaSyDVP6kYppzzGl2Ht2YSv1SBkBulY6fAhMM';
+exports.distMatrixEndpoint = 'https://maps.googleapis.com/maps/api/distancematrix/json';
 
 //Facebook API Parameters
 exports.fbAppId = '2731754247049365';

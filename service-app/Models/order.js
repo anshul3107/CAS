@@ -10,8 +10,10 @@ const orderSchema = new mongoose.Schema({
     postalCode: {type: String, required: true},
     country: {type: String, required: true},
     city: {type: String, required: true},
+    location: String,
     phoneNumber: {type: String, required: true},
-    createdAt: {type: String, default: moment().format('DDMMYYYYHHmmss')}
+    createdAt: {type: String, default: moment().format('DDMMYYYYHHmmss')},
+    charges: String
 });
 
 module.exports = mongoose.model('Order', orderSchema);
