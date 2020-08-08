@@ -1,9 +1,14 @@
+const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
-const serverConfig = require('../serverConfig');
 const fetch = require('node-fetch');
+
+const serverConfig = require('../serverConfig');
 const User = require('../Models/user');
 const Order = require('../Models/order');
 const HttpError = require('../Models/http-error');
+
+AWS.config.update({region: 'us-east-1'});
+const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 exports.newOrder = (req, res, next) => {
     const token = req.headers && req.headers.authorization;
@@ -42,12 +47,56 @@ exports.newOrder = (req, res, next) => {
                             phoneNumber,
                             charges: courierCost
                         });
+
                         orderObj.save().then((order) => {
-                            res.json({
-                                code: 200,
-                                orderId: order.id,
-                                message: `Order placed successfully. Please pay €${courierCost} at the time of order pickup.`
-                            });
+                            let sqsOrderObj = {
+                                MessageAttributes: {
+                                    orderId: {
+                                        DataType: 'String',
+                                        StringValue: order.id
+                                    },
+                                    senderName: {
+                                        DataType: 'String',
+                                        StringValue: result.firstName
+                                    },
+                                    receiverName: {
+                                        DataType: 'Number',
+                                        StringValue: order.name
+                                    },
+                                    courierCost: {
+                                        DataType: 'Number',
+                                        StringValue: order.courierCost
+                                    }
+                                },
+                                MessageBody: 'SQS Order Data',
+                                MessageDeduplicationId: order.id,
+                                MessageGroupId: 'UserOrders',
+                                QueueUrl: serverConfig.sqsQueueUrl
+                            };
+
+                            sqs.sendMessage(sqsOrderObj)
+                                .promise()
+                                .then((data) => {
+                                    console.log('SQS Success:', {...data});
+                                    res.json({
+                                        code: 200,
+                                        orderId: order.id,
+                                        message:
+                                            'Order placed successfully and a confirmation mail has been sent to your Email.' +
+                                            'Please pay €' +
+                                            courierCost +
+                                            ' at the time of order pickup.'
+                                    });
+                                })
+                                .catch((err) => {
+                                    console.log('SQS Error:', {err});
+                                    return next(
+                                        new HttpError(
+                                            500,
+                                            'Cannot update in the Message Queue. Please retry in sometime!'
+                                        )
+                                    );
+                                });
                         });
                     })
                     .catch(() => {

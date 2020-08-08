@@ -19,4 +19,6 @@ exports.fbAppId = '2731754247049365';
 exports.fbAppSecretKey = '2590cf38f8f7bce38c79f2f282bc3f1f';
 exports.fbAppCallbackURL = 'http://localhost:9000/auth/facebook/callback';
 
-exports.clientAppURL = 'http://localhost:3000';
+exports.clientAppURL = 'http://54.157.170.56:3000';
+
+exports.sqsQueueUrl = 'https://sqs.us-east-1.amazonaws.com/076411644770/CASAppQueue.fifo';

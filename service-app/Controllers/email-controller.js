@@ -1,33 +1,9 @@
-const sgMail = require('@sendgrid/mail');
 const jwt = require('jsonwebtoken');
 
 const serverConfig = require('../serverConfig');
 const User = require('../Models/user');
 const HttpError = require('../Models/http-error');
-
-const sendEmail = (options) => {
-    try {
-        sgMail.setApiKey(serverConfig.sgKey);
-        const msg = {
-            to: options.to,
-            from: options.from,
-            subject: options.subject,
-            text: options.text,
-            html: options.html
-        };
-
-        sgMail.send(msg).then(
-            (response) => {},
-            (error) => {
-                console.error('sgMail >>>', error);
-                return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
-            }
-        );
-    } catch (err) {
-        console.log('sendEmail', err);
-        return next(new HttpError(500, "Uh Oh! We're checking the issue. Please retry in sometime!"));
-    }
-};
+const {sendEmail} = require('../Service/emailService');
 
 const generateTokenAndSendEmail = (email, next, mailOptions = {}) => {
     try {
