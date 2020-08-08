@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
+// import {Link} from 'react-router-dom';
 
 import {Input, Spinner, Dropdown} from '../../Elements';
 import API from '../../helper/api';
@@ -108,14 +108,14 @@ export default function () {
             {newOrderRes && (
               <p className={`alert ${newOrderRes.code === 200 ? 'alert-success' : 'alert-danger'}`}>
                 {newOrderRes.message}
-                {newOrderRes.code === 200 && (
+                {/* {newOrderRes.code === 200 && (
                   <span>
                     <Link to={`/order/details/${newOrderRes.orderId}`} className='fs-bolder'>
                       {' Click Here'}
                     </Link>
                     {' to view your Order Details'}
                   </span>
-                )}
+                )} */}
               </p>
             )}
             <h3 className='mb-3'>New Order</h3>
