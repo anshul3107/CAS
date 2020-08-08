@@ -60,15 +60,25 @@ exports.newOrder = (req, res, next) => {
                                         StringValue: result.firstName
                                     },
                                     receiverName: {
-                                        DataType: 'Number',
+                                        DataType: 'String',
                                         StringValue: order.name
                                     },
                                     courierCost: {
-                                        DataType: 'Number',
-                                        StringValue: order.courierCost
+                                        DataType: 'String',
+                                        StringValue: order.charges
                                     }
                                 },
-                                MessageBody: 'SQS Order Data',
+                                // MessageBody: 'SQS Order Data',
+                                MessageBody: JSON.stringify(
+                                    {
+                                        orderId: order.id,
+                                        senderName: result.firstName,
+                                        senderEmail: result.email,
+                                        receiverName: order.name,
+                                        courierCost: order.charges,
+                                        orderDetailsLink: serverConfig.clientAppURL + '/order/details/' + order.id
+                                    }),
+
                                 MessageDeduplicationId: order.id,
                                 MessageGroupId: 'UserOrders',
                                 QueueUrl: serverConfig.sqsQueueUrl
@@ -77,12 +87,12 @@ exports.newOrder = (req, res, next) => {
                             sqs.sendMessage(sqsOrderObj)
                                 .promise()
                                 .then((data) => {
-                                    console.log('SQS Success:', {...data});
+                                    console.log('SQS Producer Success:', {...data});
                                     res.json({
                                         code: 200,
                                         orderId: order.id,
                                         message:
-                                            'Order placed successfully and a confirmation mail has been sent to your Email.' +
+                                            'Order placed successfully and a confirmation mail will be sent to your email. ' +
                                             'Please pay €' +
                                             courierCost +
                                             ' at the time of order pickup.'
@@ -110,11 +120,11 @@ exports.newOrder = (req, res, next) => {
                     });
             });
         } else {
-            console.log('newOrder.2', err);
+            console.log('newOrder.2');
             return next(new HttpError(400, 'Bad Data. Missing mandatory fields.'));
         }
     } catch (err) {
-        console.log('newOrder.3', err);
+        console.log('newOrder.3 WARNING', err);
         if (err.name === 'TokenExpiredError') {
             next(new HttpError(400, 'Uh Oh! Your session seems to have expired. Please login again.'));
         } else if (err.name === 'JsonWebTokenError') {
