@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 
 import './style.scss';
+import {checkLogin} from '../../helper/checkLogin';
 
 export default function (props) {
   const authData = JSON.parse(window.localStorage.getItem('authData'));
@@ -16,6 +17,7 @@ export default function (props) {
 
   return (
     <>
+      {checkLogin()}
       {showHeader && (
         <div className={'header d-flex mb-5 py-2 px-3 justify-content-end'}>
           <div className='text-black mx-2'>

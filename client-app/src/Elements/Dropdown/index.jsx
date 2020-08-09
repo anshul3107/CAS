@@ -8,8 +8,8 @@ export default function ({
   label = '',
   labelClass = '',
   options = [],
+  selectedValue,
   onSelect,
-  defaultOption,
   controlClass = '',
   placeholder = 'Select an option',
   placeholderClass = '',
@@ -25,7 +25,7 @@ export default function ({
         menuClassName={`menu ${menuClass}`}
         options={options}
         onChange={onSelect}
-        value={defaultOption || options[0]}
+        value={selectedValue}
         placeholder={placeholder}
       />
     </div>

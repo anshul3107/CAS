@@ -71,7 +71,7 @@ export default function () {
     email,
     postalCode,
     country: 'Ireland',
-    city,
+    city: city.label,
     cityLocation,
     phoneNumber
   };
@@ -88,11 +88,16 @@ export default function () {
     setIsLoading(true);
     API.get('/api/cityList').then((res) => {
       setIsLoading(false);
+      setCity({
+        label: res[0].name,
+        value: `${res[0].name};${res[0].lat},${res[0].long}`
+      });
+      setCityLocation(`${res[0].lat},${res[0].long}`);
       setCityList(() =>
         res.map((city) => {
           return {
             label: city.name,
-            value: `${city.name};${city.lat};${city.long}`
+            value: `${city.name};${city.lat},${city.long}`
           };
         })
       );
@@ -206,11 +211,12 @@ export default function () {
               label='City'
               labelClass='text-grey pt-2px'
               options={cityList}
+              selectedValue={city || cityList[0]}
               placeholderClass='pl-122px'
               onSelect={(res) => {
                 const cityInfo = res.value.split(';');
-                setCity(cityInfo[0]);
-                setCityLocation(`${cityInfo[1]},${cityInfo[2]}`);
+                setCity(cityList.filter((city) => city.label === cityInfo[0])[0]);
+                setCityLocation(cityInfo[1]);
               }}
             />
             <Input
