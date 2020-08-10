@@ -4,16 +4,26 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon server.js",
+        "start-email-svc": "node ./Service/emailService.js",
+        "start-node-app": "node server.js",
+        "start": "npm-run-all -p -r start-node-app start-email-svc",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@sendgrid/mail": "^7.2.1",
+        "aws-sdk": "^2.729.0",
+        "bcrypt": "^5.0.0",
         "body-parser": "^1.19.0",
-        "express": "^4.17.1"
-    },
-    "devDependencies": {
-        "nodemon": "^2.0.4"
+        "express": "^4.17.1",
+        "jsonwebtoken": "^8.5.1",
+        "moment": "^2.27.0",
+        "mongoose": "^5.9.21",
+        "node-fetch": "^2.6.0",
+        "npm-run-all": "^4.1.5",
+        "passport": "^0.4.1",
+        "passport-facebook": "^3.0.0",
+        "sqs-consumer": "^5.4.0"
     }
 }
