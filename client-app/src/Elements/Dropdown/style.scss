@@ -1,0 +1,35 @@
+.dropdown-wrap {
+  .dropdown-label {
+    padding-top: 4px;
+    padding-left: 16px;
+  }
+
+  .dropdown {
+    color: darkgray;
+    border-color: #dee2e6;
+
+    .control {
+      padding: 3px;
+      border-radius: 12px;
+    }
+
+    .placeholder {
+      color: grey;
+    }
+
+    .menu {
+      border-radius: 12px;
+      margin-top: 2px;
+      margin-bottom: 50px;
+
+      .Dropdown-option {
+        color: black;
+        // padding-left: 125px;
+      }
+
+      .is-selected {
+        // background-color: lightgrey;
+      }
+    }
+  }
+}
