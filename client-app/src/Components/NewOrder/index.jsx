@@ -30,6 +30,7 @@ export default function () {
 
     const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const irePostCodeRegEx = /^[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{3}$/;
+    const countryISO3 = 'IRL';
 
     const checkValidations = () => {
         let focusField = '';
@@ -92,33 +93,61 @@ export default function () {
         API.get('/public/api/email/verification?email=' + email, {api_key: 'CAS-API-KEY-b904-47d3'}).then((res) => {
             setVerificationStatus(res.isVerified);
         });
-        API.get('/api/cityList').then((res) => {
-            setIsLoading(false);
-            setCity({
-                label: res[0].name,
-                value: `${res[0].name};${res[0].lat},${res[0].long}`
+
+        API.post('https://buymeservice.azurewebsites.net/api/v1/users/authenticate', {
+            email: 'x19192304@student.ncirl.ie',
+            password: 'x19192304'
+        })
+            .then((res) => {
+                API.get('https://buymeservice.azurewebsites.net/api/v1/cities/' + countryISO3, {
+                    Authorization: 'Bearer ' + res.token
+                }).then((res) => {
+                    setIsLoading(false);
+                    setCity({
+                        label: res[0].name,
+                        value: `${res[0].name};${res[0].lat},${res[0].long}`
+                    });
+                    setCityLocation(`${res[0].lat},${res[0].long}`);
+                    setCityList(() =>
+                        res.map((city) => {
+                            return {
+                                label: city.name,
+                                value: `${city.name};${city.lat},${city.long}`
+                            };
+                        })
+                    );
+                });
+            })
+            .catch(() => {
+                API.get('/api/cityList').then((res) => {
+                    setIsLoading(false);
+                    setCity({
+                        label: res[0].name,
+                        value: `${res[0].name};${res[0].lat},${res[0].long}`
+                    });
+                    setCityLocation(`${res[0].lat},${res[0].long}`);
+                    setCityList(() =>
+                        res.map((city) => {
+                            return {
+                                label: city.name,
+                                value: `${city.name};${city.lat},${city.long}`
+                            };
+                        })
+                    );
+                });
             });
-            setCityLocation(`${res[0].lat},${res[0].long}`);
-            setCityList(() =>
-                res.map((city) => {
-                    return {
-                        label: city.name,
-                        value: `${city.name};${city.lat},${city.long}`
-                    };
-                })
-            );
-        });
     }, []);
 
     return (
         <>
             <Spinner isLoading={isLoading} />
-            {!verficationStatus && (
-                <p className='alert alert-danger'>Please verify your email before placing an order</p>
-            )}
+
             <div className='new-order'>
                 <div className='d-flex justify-content-center'>
                     <div className='col-12 col-md-6'>
+                        {!verficationStatus && (
+                            <p className='alert alert-danger'>Please verify your email before placing an order</p>
+                        )}
                         {newOrderRes && (
                             <p className={`alert ${newOrderRes.code === 200 ? 'alert-success' : 'alert-danger'}`}>
                                 {newOrderRes.message}
