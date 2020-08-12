@@ -8,6 +8,7 @@ import ForgotPassword from './Components/ForgotPassword';
 import NewOrder from './Components/NewOrder';
 import OrderList from './Components/OrderList';
 import OrderDetails from './Components/OrderDetails';
+import SocialProfile from './Components/SocialProfile';
 
 const rootPath = '/';
 const registrationPath = '/user/register';
@@ -19,6 +20,7 @@ const forgotPasswordPath = '/forgot/password';
 const newOrderPath = '/order/new';
 const orderListPath = '/order/list';
 const orderDetailsPath = '/order/details/:orderId';
+const socialProfilePath = '/user/socialprofile';
 
 export const routes = [
   {path: registrationPath, component: Registration},
@@ -30,6 +32,7 @@ export const routes = [
   {path: newOrderPath, component: NewOrder},
   {path: orderListPath, component: OrderList},
   {path: orderDetailsPath, component: OrderDetails},
+  {path: socialProfilePath, component: SocialProfile},
 
   {component: PageNotFound}
 ];

@@ -4,6 +4,7 @@ import LoginForm from './subComponents/LoginForm';
 import API from '../../helper/api';
 import {Link} from 'react-router-dom';
 import {Spinner} from '../../Elements';
+import './_style.scss';
 
 export default function () {
   const [isLoading, setIsLoading] = useState(false);
