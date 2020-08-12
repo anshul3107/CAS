@@ -1,9 +1,11 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 
 const userController = require('../Controllers/user-controller');
 const serverConfig = require('../serverConfig');
+const User = require('../Models/user');
 
 const router = express.Router();
 let user = {};
@@ -25,9 +27,6 @@ passport.use(
             profileFields: ['email', 'name']
         },
         (accessToken, refreshToken, profile, callback) => {
-            console.log('profile >>>', JSON.stringify(profile));
-            console.log('profile >>>', {...profile});
-            user = {...profile};
             return callback(null, profile);
         }
     )
@@ -35,8 +34,31 @@ passport.use(
 router.get('/facebook', passport.authenticate('facebook', {scope: 'email'}));
 router.get(
     '/facebook/callback',
-    passport.authenticate('facebook', {successRedirect: '/fbLoginSuccess', failureRedirect: '/fbLoginFailure'})
+    passport.authenticate('facebook', {
+        failureRedirect: `${serverConfig.clientAppURL}/user/login`
+    }),
+    (req, res) => {
+        const userData = req.user._json;
+        user = {
+            firstName: userData.first_name,
+            lastName: userData.last_name,
+            email: userData.email,
+            authToken: jwt.sign({email: userData.email}, serverConfig.jwtPrvtKey, {expiresIn: '2h'})
+        };
+        res.redirect(`${serverConfig.clientAppURL}/user/socialprofile`);
+    }
 );
+
+router.get('/socialUserData', (req, res, next) => {
+    User.findOne({email: user.email}).then((result) => {
+        if (result && result.password) {
+            user['isExisting'] = true;
+        } else {
+            user['isExisting'] = false;
+        }
+        res.send(user);
+    });
+});
 
 router.post('/token', userController.userLogin);
 

@@ -17,10 +17,14 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', function (next) {
-    this.password && bcrypt.hash(this.password, 10).then((hashedPassword) => {
-        this.password = hashedPassword;
-    });
-    next();
+    if (this.password) {
+        bcrypt.hash(this.password, 10).then((hashedPassword) => {
+            this.password = hashedPassword;
+            next();
+        });
+    } else {
+        next();
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);
